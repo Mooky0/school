@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Az internet ökoszisztémája és evolúciója – Tanulókártya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f1e9;
+    --paper-2:#fbf9f4;
+    --ink:#1b1b18;
+    --ink-soft:#52514a;
+    --muted:#8a887d;
+    --line:#ddd8cb;
+    --teal:#0f6e5e;
+    --teal-soft:#e3efe9;
+    --amber:#b9692a;
+    --amber-soft:#f6ebde;
+    --done:#3f7d4f;
+    --done-soft:#e6f0e4;
+    --shadow:0 1px 2px rgba(27,27,24,.05),0 6px 20px rgba(27,27,24,.06);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(27,27,24,.035) 1px, transparent 0) 0 0/22px 22px,
+      var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  code,pre,.mono{font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- Layout ---------- */
+  .wrap{display:grid;grid-template-columns:300px 1fr;gap:0;max-width:1340px;margin:0 auto}
+  .sidebar{
+    position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+    padding:26px 18px 40px 24px;border-right:1px solid var(--line);
+  }
+  .main{padding:0 clamp(20px,5vw,72px) 120px;min-width:0}
+
+  /* ---------- Topbar / hero ---------- */
+  .hero{padding:54px 0 30px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  .hero h1{font-family:"Fraunces",serif;font-weight:800;font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.02;letter-spacing:-.02em;margin:0 0 8px}
+  .hero .sub{font-family:"Fraunces",serif;font-style:italic;font-weight:500;font-size:clamp(1.05rem,2.4vw,1.4rem);color:var(--ink-soft);margin:0 0 26px}
+  .hero p.lead{max-width:62ch;color:var(--ink-soft);margin:0 0 6px}
+
+  .courseinfo{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:22px}
+  .pill{font-family:"IBM Plex Mono",monospace;font-size:.76rem;background:var(--paper-2);border:1px solid var(--line);border-radius:100px;padding:5px 12px;color:var(--ink-soft)}
+
+  /* ---------- Overall progress ---------- */
+  .overall{margin-top:26px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .overall .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+  .overall .lbl{font-size:.84rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+  .overall .num{font-family:"Fraunces",serif;font-weight:700;font-size:1.5rem}
+  .bar{height:9px;background:var(--line);border-radius:100px;overflow:hidden}
+  .bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#1a9d86);border-radius:100px;width:0;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+
+  /* ---------- Sidebar nav ---------- */
+  .side-title{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 14px 4px}
+  .nav-item{display:block;text-decoration:none;padding:9px 12px;border-radius:10px;margin-bottom:2px;color:var(--ink-soft);transition:background .15s,color .15s}
+  .nav-item:hover{background:var(--paper-2);color:var(--ink)}
+  .nav-item.active{background:var(--teal-soft);color:var(--teal)}
+  .nav-item .nt{display:flex;align-items:center;gap:9px}
+  .nav-item .nnum{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--muted);min-width:18px}
+  .nav-item.active .nnum{color:var(--teal)}
+  .nav-item .ntxt{font-size:.9rem;font-weight:500;line-height:1.25}
+  .nav-item .nbar{height:4px;background:var(--line);border-radius:100px;margin:6px 0 0 27px;overflow:hidden}
+  .nav-item .nbar > span{display:block;height:100%;background:var(--done);width:0;transition:width .4s}
+
+  /* ---------- Chapter ---------- */
+  .chapter{padding:46px 0 8px;scroll-margin-top:14px}
+  .chapter + .chapter{border-top:1px solid var(--line)}
+  .ch-head{margin-bottom:24px}
+  .ch-subject{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .ch-subject .dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+  .ch-title{font-family:"Fraunces",serif;font-weight:800;font-size:clamp(1.7rem,3.6vw,2.5rem);line-height:1.05;letter-spacing:-.015em;margin:0 0 12px}
+  .ch-title .cn{color:var(--muted);font-weight:600;margin-right:.4em}
+  .ch-intro{max-width:64ch;color:var(--ink-soft);margin:0}
+  .ch-meta{display:flex;align-items:center;gap:14px;margin-top:16px;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--muted)}
+  .ch-meta .cbar{flex:1;max-width:220px;height:6px;background:var(--line);border-radius:100px;overflow:hidden}
+  .ch-meta .cbar > span{display:block;height:100%;background:var(--done);width:0;transition:width .4s}
+
+  /* ---------- Checklist ---------- */
+  .checklist{display:grid;gap:10px;margin:22px 0 8px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .clist-h{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:4px 6px 2px}
+  .titem{display:flex;gap:13px;align-items:flex-start;padding:11px 12px;border-radius:11px;transition:background .15s}
+  .titem:hover{background:var(--paper)}
+  .titem.done{opacity:.72}
+  .check{flex-shrink:0;width:23px;height:23px;border:2px solid var(--line);border-radius:7px;background:var(--paper-2);cursor:pointer;display:grid;place-items:center;margin-top:1px;transition:all .18s;position:relative}
+  .check:hover{border-color:var(--done)}
+  .check svg{width:14px;height:14px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.5);transition:all .18s}
+  .titem.done .check{background:var(--done);border-color:var(--done)}
+  .titem.done .check svg{opacity:1;transform:scale(1)}
+  .tbody{min-width:0;flex:1}
+  .tlink{font-weight:600;font-size:1.01rem;color:var(--ink);text-decoration:none;cursor:pointer;border:none;background:none;padding:0;font-family:inherit;text-align:left;line-height:1.35}
+  .tlink:hover{color:var(--teal);text-decoration:underline;text-underline-offset:3px}
+  .titem.done .tlink{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--ink-soft)}
+  .tshort{font-size:.9rem;color:var(--ink-soft);margin-top:3px}
+  .tgo{flex-shrink:0;align-self:center;color:var(--muted);font-size:1.1rem;transition:transform .15s,color .15s}
+  .titem:hover .tgo{color:var(--teal);transform:translateX(3px)}
+
+  /* ---------- Lessons ---------- */
+  .lessons{margin-top:34px}
+  .lesson{padding:8px 0 30px;scroll-margin-top:18px;border-top:1px dashed var(--line)}
+  .lesson:first-child{border-top:none}
+  .lesson h3{font-family:"Fraunces",serif;font-weight:700;font-size:1.36rem;letter-spacing:-.01em;margin:22px 0 4px;display:flex;align-items:center;gap:10px;scroll-margin-top:18px}
+  .lesson h3 .lnum{font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--teal);background:var(--teal-soft);border-radius:7px;padding:2px 8px;font-weight:500}
+  .lesson .ldesc{font-style:italic;color:var(--muted);margin:0 0 14px;font-family:"Fraunces",serif;font-size:1.02rem}
+  .lesson p{margin:0 0 12px;max-width:70ch}
+  .lesson ul{margin:0 0 14px;padding-left:20px;max-width:70ch}
+  .lesson li{margin-bottom:6px}
+  .lesson strong{font-weight:600}
+  .lesson code{background:var(--paper-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.86em}
+  .lesson pre{background:#1c1c1a;color:#ece9df;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:.82rem;line-height:1.55;margin:0 0 14px;box-shadow:var(--shadow)}
+  .lesson pre code{background:none;border:none;padding:0;color:inherit}
+  .lk{color:#7fd0c0}.lc{color:#caa46a}
+
+  .plain{background:var(--amber-soft);border:1px solid #e9d4bd;border-left:4px solid var(--amber);border-radius:12px;padding:14px 18px;margin:4px 0 16px;max-width:70ch}
+  .plain .ph{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:7px;margin-bottom:7px}
+  .plain p{margin:0;color:#5e4326}
+  .plain p + p{margin-top:8px}
+
+  .keytable{width:100%;border-collapse:collapse;margin:0 0 14px;font-size:.88rem;max-width:70ch}
+  .keytable th,.keytable td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .keytable th{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .keytable tr:last-child td{border-bottom:none}
+  .lesson table{width:100%;border-collapse:collapse;margin:0 0 14px;font-size:.88rem;max-width:72ch}
+  .lesson table th,.lesson table td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .lesson table th{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .lesson table tr:last-child td{border-bottom:none}
+
+  /* ---------- Controls / footer ---------- */
+  .tools{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0;padding-top:20px;border-top:1px solid var(--line)}
+  .btn{font-family:"IBM Plex Mono",monospace;font-size:.8rem;background:var(--paper-2);border:1px solid var(--line);color:var(--ink-soft);padding:8px 15px;border-radius:100px;cursor:pointer;transition:all .15s}
+  .btn:hover{border-color:var(--teal);color:var(--teal)}
+  .savehint{font-size:.78rem;color:var(--muted);margin-top:14px;font-family:"IBM Plex Mono",monospace}
+
+  .totop{position:fixed;right:22px;bottom:22px;width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;cursor:pointer;display:grid;place-items:center;font-size:1.2rem;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:50}
+  .totop.show{opacity:1;pointer-events:auto}
+  .totop:hover{transform:translateY(-3px)}
+
+  .mobile-bar{display:none}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:900px){
+    .wrap{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .sidebar.open{display:block;position:fixed;inset:0;z-index:100;height:100vh;background:var(--paper);border-right:none}
+    .main{padding:0 20px 120px}
+    .mobile-bar{display:flex;position:sticky;top:0;z-index:60;align-items:center;justify-content:space-between;
+      padding:12px 18px;background:rgba(244,241,233,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .mobile-bar .mtitle{font-family:"Fraunces",serif;font-weight:700;font-size:.95rem}
+    .mobile-bar .mprog{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--teal)}
+    .menu-btn{background:none;border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-family:"IBM Plex Mono",monospace;font-size:.78rem;cursor:pointer}
+    .sidebar.open .close-btn{display:block;position:absolute;top:18px;right:18px}
+  }
+  .close-btn{display:none;background:none;border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-family:"IBM Plex Mono",monospace;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="mobile-bar">
+  <span class="mtitle">Internet ökoszisztémája</span>
+  <span class="mprog" id="mProg">0%</span>
+  <button class="menu-btn" id="menuBtn">☰ Fejezetek</button>
+</div>
+
+<div class="wrap">
+  <aside class="sidebar" id="sidebar">
+    <button class="close-btn" id="closeBtn">✕ Bezár</button>
+    <p class="side-title">Fejezetek</p>
+    <nav id="nav"></nav>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <p class="eyebrow">VITMMA00 · BME-TMIT</p>
+      <h1>Az internet ökoszisztémája és evolúciója</h1>
+      <p class="sub">Az internet mint élettér — az irányított káosz</p>
+      <p class="lead">Interaktív tanulókártya a teljes tárgyhoz. Minden fejezet alatt megtalálod az érintett témák listáját — kattints egy témára, hogy a részletes leckéhez ugorj, és pipáld ki, amit már megtanultál. A haladásod a böngésződben mentődik.</p>
+      <div class="courseinfo">
+        <span class="pill">Heszberger Zalán</span>
+        <span class="pill">Lévai Tamás (labor)</span>
+        <span class="pill">Rétvári Gábor</span>
+        <span class="pill">tmit.bme.hu/internet</span>
+      </div>
+      <div class="overall">
+        <div class="row">
+          <span class="lbl">Teljes haladás</span>
+          <span class="num"><span id="ovDone">0</span> / <span id="ovAll">0</span> téma</span>
+        </div>
+        <div class="bar"><span id="ovBar"></span></div>
+      </div>
+    </header>
+
+    <div id="content"></div>
+
+    <div class="tools">
+      <button class="btn" id="checkAll">Mindent kipipál</button>
+      <button class="btn" id="resetAll">Haladás törlése</button>
+    </div>
+    <p class="savehint" id="saveHint">A pipák automatikusan mentődnek ebbe a böngészőbe.</p>
+  </main>
+</div>
+
+<button class="totop" id="toTop" aria-label="Vissza a tetejére">↑</button>
+
+<script>
+/* =====================================================================
+   TANANYAG ADATOK
+   Minden fejezet: { id, num, subject, title, intro, topics:[...] }
+   Minden téma:    { id, title, short, body(HTML), plain? }
+   ===================================================================== */
+const SUBJECT = "Az internet ökoszisztémája és evolúciója";
+
+const CHAPTERS = [
+{
+  id:"ch1", num:1, subject:SUBJECT,
+  title:"Bevezető gondolatok — az internet mint élettér",
+  intro:"A tárgy nem klasszikus „protokoll-tananyag”: az internetet nem mérnöki alkotásként, hanem nagy, komplex, tőlünk függetlenül működő rendszerként vizsgálja, amelyet autonóm szereplők (kormányok, szolgáltatók, felhasználók) döntéseinek eredője alakít. Ez a fejezet ezt a szemléletet alapozza meg: kik az internet szereplői, mit jelent a hétköznapokban, és miért beszélünk „irányított káoszról”. A vizsgán itt a fogalmi keret és a példák a fontosak, nem a számok.",
+  topics:[
+   {id:"t-szereplok", title:"Az internet szereplői", short:"Ki építi, üzemelteti és szabályozza a hálózatot.",
+    body:`<p>Az internetnek nincs egyetlen gazdája — a működése sokféle, egymással csak részben együttműködő szereplő döntéseiből áll össze. Ezt érdemes először tisztázni, mert a tárgy egész logikája erre épül: ha nincs központ, akkor a globális viselkedést a sok lokális, önérdekű döntés <em>eredőjeként</em> kell értelmeznünk.</p>
+    <p>A főbb szereplők:</p>
+    <ul>
+     <li><strong>Technológiai szakemberek, szervezetek</strong> — akik a hálózatot ténylegesen építik és üzemeltetik.</li>
+     <li><strong>Erőforrás-elosztó szervezetek</strong> — a globálisan egyedi erőforrásokat (IP-címek, AS-számok, domain-nevek) kezelik: ICANN, a regionális RIR-ek, DNS-szervezetek. Ezek a rendszer <em>központosított</em> elemei.</li>
+     <li><strong>Üzemeltetők</strong> — a hálózattulajdonosok (autonóm rendszerek, ISP-k) és az IXP-k (Internet Exchange Point). <em>A tárgy súlypontja róluk és az ő üzleti döntéseikről szól.</em></li>
+     <li><strong>Felhasználók</strong> — magánszemélyek és cégek, egyszerre tartalom-előállítók és -fogyasztók.</li>
+     <li><strong>Közhasznú és szabályozó szervezetek</strong> — az internet fejlődését segítő szervezetek, illetve a nemzeti szabályozók (Magyarországon az NMHH).</li>
+    </ul>
+    <p>A kulcsgondolat: a technikai és az üzleti/szabályozási réteg nem választható szét. Egy útvonal azért alakul ki, mert valakinek üzletileg megéri — és ezt a technika (a BGP) csak kiszolgálja.</p>`},
+   {id:"t-kozmu", title:"Az internet mint közmű", short:"A hozzáférés lassan alapjog; bevezetés a hálózatsemlegességbe.",
+    body:`<p>A közmű olyan, központi infrastruktúrával rendelkező elosztó/gyűjtő rendszer, mint a víz, a villany, a gáz vagy a telefon. Ezek közt vannak <strong>kritikus infrastruktúrák</strong>, ahol egyetlen hiba is vészhelyzetet okozhat. Az internet egyre inkább ebbe a sorba illeszkedik — és ennek mély következményei vannak a szabályozásra nézve.</p>
+    <ul>
+     <li>A hozzáférés lassan az <strong>alapjogok</strong> egyikévé válik, az általános ellátás részévé. (Az USA-ban például létezett internetadó-mentesség — ITFA/PITFA.)</li>
+     <li>Felmerül, hogy az internet <strong>közszolgáltatás</strong> legyen-e. Ez vezet át a tárgy egyik visszatérő kérdéséhez, a <strong>hálózatsemlegességhez</strong> (Net Neutrality, lásd a kormányzás fejezetben): köteles-e az ISP minden forgalmat egyenrangúan, „értéksemlegesen” kezelni.</li>
+    </ul>
+    <p>Vizsgán fontos az ív: <em>magántechnológiából lassan közmű lesz</em>, és ez magával hozza a szabályozás iránti igényt — miközben az internet eredeti, decentralizált természete ennek ellenáll.</p>`},
+   {id:"t-hatasok", title:"Társadalmi és üzleti hatások", short:"Kutatás, oktatás, társadalom, szórakozás, üzlet, politika.",
+    body:`<p>Az anyag végigveszi, hogyan alakít át az internet szinte minden életterületet. A vizsgán nem a listát kell magolni, hanem érteni a mintázatot: minden területen ugyanaz történik — az internet <em>eszközből</em> idővel <em>közeggé</em> válik, és teljesen új jelenségeket szül.</p>
+    <ul>
+     <li><strong>Kutatás:</strong> komplex rendszerek / hálózatelmélet. A szemlélet lényege, hogy az építőkockák részletei lényegtelenek, a <em>kapcsolatok</em> a fontosak; korábban sosem látott skálájú adatok elemezhetők.</li>
+     <li><strong>Oktatás:</strong> online egyetemek, távoktatás, állami kontroll nélküli „márka-diplomák” (a Milton Friedman-féle elképzelés beteljesülése?).</li>
+     <li><strong>Társadalom:</strong> online társkeresés (az USA-ban a párkapcsolatok jelentős része így alakul), generációváltás (X/Y/Z/α — a digitális bevándorlóktól a digitális bennszülöttekig).</li>
+     <li><strong>Üzlet:</strong> az egyén a középpontban („long tail”, „infinite shelf-space”, ultra-niche marketing), totális virtualizálódás, digitális nomádok, social business.</li>
+     <li><strong>Politika:</strong> az Arab Tavasz mint az internet által formált mozgalom.</li>
+    </ul>`},
+   {id:"t-kockazatok", title:"Lehetőségek és kockázatok", short:"Szabadabb világ — de függőség, adatvédelem, álhírek, biztonság.",
+    body:`<p>Az internet személyesebb, szabadabb és kényelmesebb világot ígér — de minden előnynek ára van. A vizsgán a párokat érdemes felidézni (lehetőség ↔ kockázat):</p>
+    <ul>
+     <li><strong>Függőség</strong> — ma már hivatalosan is betegségként jegyzett jelenség; az internet komoly időrabló is lehet.</li>
+     <li><strong>Adatvédelem:</strong> a <em>digitális lábnyom</em>, amely lehet passzív (rólunk gyűlik) és aktív (mi hozzuk létre).</li>
+     <li><strong>Társadalmi kockázatok:</strong> a kapcsolatok virtualizálódása, a kiskorúak védelme.</li>
+     <li><strong>Álhírek:</strong> az információ mennyiségi növekedése a hitelesség csökkenésével jár.</li>
+     <li><strong>Kiberbűnözés és biztonsági kockázatok</strong>, kiemelten a kritikus infrastruktúrák védelme.</li>
+    </ul>`},
+   {id:"t-kiiranyit", title:"Ki irányítja az internetet?", short:"A válasz: senki — pontosabban mindenki.",
+    body:`<p>Ez a tárgy egyik központi, végig visszatérő kérdése. A rövid válasz: <strong>senki</strong>. A pontosabb: <strong>mindenki</strong> — nincs központi kontroll, az egészet autonóm szereplők döntéseinek eredője alakítja. Ez a paradoxon az egész félév kulcsmondata.</p>
+    <p>A kapcsolódó viták, amelyeket érdemes ismerni:</p>
+    <ul>
+     <li>Összeesküvés-elméletek a „háttérből irányító nagyokról”; a néhány médiamogul kezében koncentrálódó online médiumok.</li>
+     <li>Médiatörvények és nemzetközi egyezmények (pl. ACTA) a szólásszabadság korlátozásának veszélyével.</li>
+     <li>A hálózatsemlegesség folyamatos megkérdőjeleződése.</li>
+    </ul>
+    <p>A lényeg, hogy a „ki irányít” kérdésre a tárgy <em>technikai</em> választ ad: a működést a protokollok (főleg a BGP) és a mögöttük álló üzleti érdekek határozzák meg, nem egy döntéshozó.</p>`},
+   {id:"t-kaosz", title:"A szervezett káosz", short:"Alulról szerveződő jelenségek: Anonymous, anonim hálózatok, dark web.",
+    body:`<p>Az „irányított/szervezett káosz” kifejezés azt ragadja meg, hogy számos internetes jelenséget senki sem irányít, mégis „megszervezi magát”. A vizsgán a példák a fontosak, mert ezek illusztrálják a fejezet fő tételét.</p>
+    <ul>
+     <li><strong>Társadalmi jelenségek:</strong> egy nyilvánossá vált Facebook-meghívóra váratlanul ezrek érkeznek (anyagi kár, sérültek).</li>
+     <li><strong>Cyberbullying / cyberstalking:</strong> a közösségi oldalakkal egyidős, rohamosan növekvő jelenség.</li>
+     <li><strong>Szabad információáramlás vs. tulajdonjogok:</strong> a SOPA/PIPA/ACTA elleni 2012. január 18-i „internet-sötétülés”, amelyben egyének és nagy cégek is részt vettek.</li>
+     <li><strong>Lehallgatás és szólásszabadság:</strong> Wikileaks (2006-tól), Cablegate (2010).</li>
+     <li><strong>Az Anonymous:</strong> vezető nélküli „hacktivista” szerveződés (a 4chanről indult), jellemző eszköze a DDoS-támadás.</li>
+     <li><strong>Anonim hálózatok:</strong> Tor (eredetileg a US Navy fejlesztette!), I2P, Freenet — itt jön be a Deep web / Dark web fogalma.</li>
+    </ul>
+    <p>Záró gondolat az anyagból: az internet végső soron csak <em>eszköz</em> — az emberek a megszokott tevékenységeiket viszik új közegbe, de az új eszköz mégis teljesen új alkalmazásokat is létrehoz.</p>`}
+  ]
+},
+{
+  id:"ch2", num:2, subject:SUBJECT,
+  title:"Rendszerszintű anomáliák",
+  intro:"Mielőtt belemennénk a működésbe, érdemes látni, hogy ez a hatalmas rendszer időnként látványosan „elromlik”. Ezek az anomáliák nem véletlenek: pont azokra a mély tervezési kompromisszumokra mutatnak rá (skálázhatóság, a hirdetések hitelesítésének hiánya, a 40 éves IP-technológia tehetetlensége), amelyeket a tárgy a továbbiakban megért. A vizsgán mindegyik anomáliához tudni kell: mi történt, mi az ok, és mi a (nem teljes) megoldás.",
+  topics:[
+   {id:"t-halozatokhaloz", title:"Az internet: „hálózatok hálózata”", short:"Nagyságrendek: ~50 ezer szolgáltató, milliárdnyi eszköz.",
+    body:`<p>Az internet nem egyetlen hálózat, hanem önállóan üzemeltetett hálózatok (autonóm rendszerek) összekapcsolódása — innen a „hálózatok hálózata” elnevezés. A nagyságrendek érzékeltetik, miért nehéz bármit is központilag irányítani vagy újratervezni:</p>
+    <ul>
+     <li>kb. <strong>50 ezer szolgáltató</strong> (AS),</li>
+     <li><strong>10 milliárd</strong> körüli csatlakoztatott eszköz,</li>
+     <li><strong>3–4 milliárd</strong> felhasználó,</li>
+     <li>több <strong>trillió USD</strong> üzleti bevétel.</li>
+    </ul>
+    <p>Ekkora skálán a megbízhatóság, a biztonság és a magánszféra védelme nyitott kérdés — és senki sincs abban a helyzetben, hogy az egészet „kézből” irányítsa.</p>`},
+   {id:"t-skalaz", title:"Skálázhatóság és a 512k day", short:"A routing táblák növekedése egy egész napos kimaradást okozott.",
+    body:`<p>Az internet alapja, az IP-protokoll <strong>több mint 40 éves</strong>, és a növekedésnek technológiai határai vannak. A forgalomtovábbítás úgy működik, hogy a csomag fejlécében ott a cél IP-címe, a routerek pedig egy <em>routing táblában</em> tárolják, hogy melyik célhálózat felé mi a következő állomás. Egyre több eszköz → egyre több tárolandó bejegyzés (az aggregáció ellenére is).</p>
+    <p>A <strong>512k day</strong> (2014. augusztus 12.) ennek iskolapéldája: a globális routing táblák mérete átlépte az <strong>512&nbsp;000</strong> bejegyzést. Sok régebbi routerben pont ennyi volt a hardveres méretkorlát, így a kieső bejegyzésekre érkező csomagok eldobódtak („ICMP Destination Unreachable”), és komoly kimaradások léptek fel a világ jelentős részén.</p>
+    <p><strong>A megoldás</strong> rövid távon konfigurációs volt: a táblák fizikai mérete sokszor valójában 1024k, csak az alapból 512k volt fenntartva az IPv6-nak — elég volt átállítani a korlátot. De a kérdés megmaradt: mi lesz, ha elérjük az 1024k-t? Meddig skálázódnak hatékonyan a routerek? Kell-e új protokoll / új routing architektúra?</p>`,
+    plain:`minden router fejében van egy „telefonkönyv”, amiben utánanéz, merre küldje tovább a csomagot. Ez a könyv folyamatosan hízik. 2014-ben egy csomó régebbi routerben pont elfogyott a polc: a könyv nem fért bele a memóriába, így ezek a gépek elkezdtek leveleket a kukába dobni. Gyors megoldás: „pakoljunk át egy nagyobb polcra” (konfig-átállítás). De a polc sem végtelen — ez az internet egyik megoldatlan, hosszú távú gondja.`},
+   {id:"t-youtube", title:"A YouTube-incidens és a prefix hijacking", short:"2008: Pakisztán véletlenül „eltérítette” a YouTube forgalmát.",
+    body:`<p>A szolgáltatók IP-címtartományt igényelnek, azt <em>meghirdetik</em>, és a BGP gondoskodik róla, hogy a hirdetés a hálózat minden részébe eljusson — a routerek ez alapján választanak útvonalat. A bökkenő: <strong>a BGP nem hitelesíti a hirdetéseket</strong>.</p>
+    <p><strong>2008. február 25.:</strong> Pakisztán belföldön blokkolni akarta a YouTube-ot, ezért egy hamis hirdetést bocsátott ki a YouTube címtartományára (208.65.152.0/22), hogy a beérkező forgalmat eldobja. Téves konfiguráció miatt ez a hirdetés <em>kiszivárgott</em> a globális internetre is. Ahol Pakisztán „közelebb” volt, mint a valódi YouTube (Ázsia nagy része), ott a routerek a pakisztáni hirdetést fogadták el — így a YouTube-ra szánt forgalmat Pakisztán felé küldték, ahol az eldobódott. A YouTube emiatt elérhetetlenné vált az internet jelentős részéről.</p>
+    <p>Ez a <strong>prefix hijacking</strong>: ugyanazt a címtartományt egyszerre többen hirdetik, és nem dönthető el egyértelműen, melyik a valódi. Hasonló esetek: 2018-ban a Google teljes forgalma egy órán át Kínán és Oroszországon át haladt; 2014-ben így loptak tízezer dollárnyi Bitcoint. <strong>Megoldás</strong> elvileg a szűrés/hitelesítés (Secure BGP), de ennek globális bevezetése — mint sok más jó ötleté (Secure DNS, IPv6, IP multicast) — várat magára.</p>`,
+    plain:`képzeld el, hogy a postások egymásnak kiabálják, „a YouTube nálam van, hozzátok ide!”. Senki nem ellenőrzi, hogy ez igaz-e. Pakisztán véletlenül elkiabálta, hogy „nálam van a YouTube” — és aki közelebb volt hozzá, mint az igazi YouTube-hoz, az tényleg Pakisztánba kezdte hordani a leveleket, ahol azok a szemétbe kerültek. Rosszindulattal ugyanezzel le is lehet hallgatni a forgalmat.`},
+   {id:"t-ipv4fogyas", title:"IPv4-címek fogyása és az IPv6", short:"Elfogytak a 32 bites címek; az IPv6 mégsem terjed.",
+    body:`<p>Az IPv4-cím 32 bites egész szám, vagyis összesen kb. <strong>4 milliárd</strong> egyedi cím létezik. Ezeket tartományokba (prefixekbe) osztva kell kiosztani, és a kiosztható tartományok lényegében <strong>elfogytak</strong>. Mivel IPv4-cím nélkül egy hálózat „használhatatlan”, a nem használt tartományok többmilliós <strong>másodlagos piacon</strong> cserélnek gazdát — 2011-ben például a Microsoft 7,5 millió dollárt fizetett a Nortel címtartományáért.</p>
+    <p>A megoldás 1998 óta adott: az <strong>IPv6</strong> 128 bites címekkel gyakorlatilag kifogyhatatlan címteret kínál, és minden piaci eszköz támogatja. Mégis a részesedése csak 10–20% körüli. Helyette inkább kerülőmegoldásokat használnak: másodlagos IPv4-piac, Carrier-grade NAT (CGN), VPN-ek, dinamikus címkiosztás.</p>
+    <p>A nagy kérdés, amit a tárgy fel is tesz: <em>miért nem terjed el egy technikailag minden szempontból jobb protokoll?</em> A válasz a <strong>kompatibilitás</strong> és a hálózati hatás: amíg a világ IPv4-en beszél, addig egyedül IPv6-ra váltani nem éri meg — ez vezet át a „homokóra-modell” és az „internet ossification” (megcsontosodás) gondolatához.</p>`,
+    plain:`az IPv4 olyan, mint egy telefonkönyv, amiben elfogytak a szabad számok. Van egy sokkal nagyobb új könyv (IPv6), amibe mindenki beleférne — de hiába jobb, ha a haverod még a régi könyvet használja, te egyedül nem tudsz átköltözni. Ezért inkább trükközünk: több háztartás osztozik egy számon (NAT/CGN), vagy felvásároljuk mások megmaradt számait drágán.`},
+   {id:"t-rendszerelmelet", title:"Rendszerelméleti megközelítés", short:"Az internetet megfigyeljük és modellezzük, nem tervezzük újra.",
+    body:`<p>Ez a fejezet a tárgy módszertani hitvallása. Az internetet <strong>nem mérnöki alkotásként</strong> kezeljük, hanem nagy méretű, komplex, elosztott, tőlünk függetlenül működő rendszerként. Ennek konkrét következményei vannak arra, mit tehetünk vele:</p>
+    <ul>
+     <li><strong>Átalakítani, újratervezni nem tudjuk</strong> — mert nagyszámú autonóm szereplő (kormányok, szolgáltatók stb.) együttes viselkedése alakítja.</li>
+     <li>A <strong>topológiáját sem ismerjük</strong>, még közelítőleg sem (az AS-AS üzleti kapcsolatok nagy része titkos).</li>
+     <li>Ezért a célunk inkább <strong>megfigyelni, megérteni és modellezni</strong> az interneten zajló folyamatokat.</li>
+    </ul>
+    <p>Ez a szemlélet erősen emlékeztet a <strong>közgazdaságtanra</strong>: ott sem egy tervező mozgatja a gazdaságot, hanem sok önérdekű szereplő döntéseit figyeljük és modellezzük. A megértéshez négy dolgot kell ismernünk: hogyan működik az internet (technológia), hogyan jutott idáig (40 éves evolúció), mik a szolgáltatók motivációi (decentralizált, autonóm döntések), és milyen kiutak lehetségesek.</p>`}
+  ]
+},
+{
+  id:"ch3", num:3, subject:SUBJECT,
+  title:"A TCP/IP protokollok",
+  intro:"Itt rakjuk le a technikai alapokat, amelyekre az egész félév épül. A vezérgondolat a rétegezés: az internet bonyolultságát funkcionális rétegekre bontjuk, ahol minden réteg az alatta lévő szolgáltatásait használva nyújt szolgáltatást a felette lévőnek. A vizsgán a rétegek funkcióit, az IP best-effort természetét, a címzést (CIDR), a forwarding/routing különbséget és a homokóra-modellt kell magabiztosan tudni.",
+  topics:[
+   {id:"t-retegek", title:"Hálózati rétegek (TCP/IP modell)", short:"Funkcionális modulok egymásra épülő szolgáltatásokkal.",
+    body:`<p>Az internet rendkívül komplex elosztott rendszer; a csatlakoztatott eszközök összehangolt működését <strong>hálózati protokollok</strong> biztosítják. A bonyolultság kezelésére szolgál a mérnöki absztrakció, a <strong>hálózati réteg</strong>: egy-egy funkcionális modul a protokoll-stackben.</p>
+    <p>Egy réteg jellemzői (ezt érdemes pontosan tudni):</p>
+    <ul>
+     <li>szolgáltatást nyújt a <strong>felsőbb</strong> rétegnek, miközben az <strong>alsóbb</strong> réteg szolgáltatásait használja;</li>
+     <li>egységes interfészt mutat felfelé és lefelé, így elvileg <em>cserélhető</em> (egy másik megvalósítással);</li>
+     <li>a kommunikáció a rétegek között <em>vertikális</em>, az azonos rétegek között pedig <em>horizontális</em> (logikailag „egymással beszélnek”).</li>
+    </ul>
+    <p>A TCP/IP modell az ISO/OSI modelltől függetlenül jött létre. A tárgy szempontjából a négy lényeges réteg: az <strong>adatkapcsolati</strong> (link), a <strong>hálózati</strong> (IP), a <strong>szállítási</strong> (TCP/UDP) és felül az alkalmazási réteg.</p>`},
+   {id:"t-link", title:"Adatkapcsolati réteg: az Ethernet", short:"Helyi hálózat, MAC-címek, switch vs. hub.",
+    body:`<p>Az adatkapcsolati réteg a <strong>helyi</strong> hálózat protokollja (Ethernet, PPP, WiFi…). Feladata, hogy a <em>közös linken</em> lévő hosztok IP-interfészei között hibamentes csomagátvitelt nyújtson a felette lévő hálózati rétegnek.</p>
+    <p>Szolgáltatásmodellje: a bemenő adatok tördelése <strong>keretekre</strong>, sorrendhelyes továbbítás, nyugtázás, hibajavítás, forgalomszabályozás (hogy ne árasszuk el a vevőt), valamint a megosztott csatornához való hozzáférést vezérlő <strong>közeghozzáférési (MAC) protokoll</strong>. A fizikai réteget is ide soroljuk.</p>
+    <p>A legelterjedtebb képviselő az <strong>Ethernet (IEEE 802.3)</strong>: 3&nbsp;Mbit/s-tól 100&nbsp;Gbit/s-ig, <strong>48 bites „flat” címtérrel</strong> (MAC-címek), CSMA/CD közeghozzáféréssel. Az Ethernet-szegmensek összekapcsolhatók:</p>
+    <ul>
+     <li><strong>hub/repeater:</strong> minden keretet butábn továbbít minden szegmensre;</li>
+     <li><strong>switch:</strong> „intelligensen” csak a megfelelő szegmensre kapcsol (Spanning Tree Protocol / SP Bridging a hurkok ellen).</li>
+    </ul>
+    <p>Fontos részlet: a switch-ek Ethernet-interfészeinek <em>nincs</em> IP-címük; a bridge-elt Ethernet-hálózat az IP-rétegnek egyetlen, „átlátszó” linknek látszik. Az IP-cím a routerek és hosztok interfészein van.</p>`},
+   {id:"t-ip", title:"Hálózati réteg: az Internet Protokoll", short:"Megbízhatatlan, összeköttetésmentes, best-effort datagram.",
+    body:`<p>Az IP az internetre csatlakozó eszközök közös „nyelve”. Funkciója egy <strong>megbízhatatlan, összeköttetésmentes, best-effort datagram</strong>-szolgáltatás a szállítási réteg számára. Ezt a négy jelzőt érdemes pontosan érteni, mert minden későbbi tervezési döntés ebből következik:</p>
+    <ul>
+     <li><strong>megbízhatatlan:</strong> nincs adat-hibajavítás (csak a fejlécre van ellenőrzőösszeg) — ha kell, a felsőbb réteg (TCP) gondoskodik róla;</li>
+     <li><strong>összeköttetésmentes:</strong> nincs kapcsolatfelépítési fázis az adatátvitel előtt;</li>
+     <li><strong>datagram:</strong> minden csomag tartalmazza a cél azonosítóját, és <em>egyenként</em> továbbítódik — akár különböző útvonalakon is;</li>
+     <li><strong>best-effort:</strong> „minden csomag egyenrangú” — a hálózat igyekszik kézbesíteni, de nem garantál semmit.</li>
+    </ul>
+    <p>A hálózati réteg fő szolgáltatásai: a heterogén alhálózatok közti átjárás (<strong>internetworking</strong>), a <strong>címzés</strong> (egyedi azonosítók), és a <strong>forgalomirányítás</strong> — ezen belül a csomagtovábbítás (forwarding) és az útvonalválasztás (routing). Plusz egyéb funkciók, pl. a fragmentáció.</p>`},
+   {id:"t-osszekottetes", title:"Összeköttetés-alapú vs. -mentes", short:"Mikor van „áramkör”, és mikor utazik magában a csomag.",
+    body:`<p>Az IP <em>összeköttetésmentes</em> — de érdemes szembeállítani az ellentétével, mert a vizsga szereti összehasonlíttatni a kettőt. A különbség lényege, hogy felépítünk-e előre egy „áramkört”, vagy minden csomag magában találja meg az útját.</p>
+    <table><thead><tr><th></th><th>Összeköttetésmentes (IP)</th><th>Összeköttetés-alapú</th></tr></thead>
+    <tbody>
+     <tr><td><strong>Áramkör</strong></td><td>nincs</td><td>a kommunikáció előtt mindig felépül</td></tr>
+     <tr><td><strong>Címzés</strong></td><td>minden csomag a teljes forrás- és célcímet hordozza</td><td>rövid virtuális-áramkör-azonosító (rövidebb a címnél)</td></tr>
+     <tr><td><strong>Továbbítás</strong></td><td>statikus vagy dinamikus routing</td><td>(circuit-)switching az áramkör mentén</td></tr>
+     <tr><td><strong>Állapot</strong></td><td>routing táblák a routerekben</td><td>virtuális áramköröket nyilvántartó táblák a switchekben</td></tr>
+     <tr><td><strong>Torlódásvédelem</strong></td><td>bonyolult</td><td>egyszerű (a beengedés-szabályozás az áramkör felépítésekor megtörténik)</td></tr>
+    </tbody></table>
+    <p>Az internet tudatosan a <em>connectionless</em> utat választotta: ez rugalmasabb és jobban tűri a hibákat (a csomag más úton is mehet), cserébe a megbízhatóságot a végpontokra (TCP) bízza.</p>`},
+   {id:"t-ipv4header", title:"Az IPv4-fejléc", short:"A legfontosabb mezők: TTL, protokoll, checksum, fragmentáció.",
+    body:`<p>A fejléc mezőinek ismerete tipikus vizsgakérdés. Nem kell mind a 20+ bájtot fejből tudni, de a működést meghatározó mezőket igen:</p>
+    <ul>
+     <li><strong>Version (4 bit):</strong> a verzió, IPv4 esetén mindig 4.</li>
+     <li><strong>IHL (4 bit):</strong> a fejléc hossza 4 bájtos szavakban (min. 20, max. 60 bájt).</li>
+     <li><strong>ToS / DiffServ + ECN:</strong> szolgáltatásminőség-jelzés, illetve torlódásjelzés (kevéssé használt).</li>
+     <li><strong>Total length (16 bit):</strong> a teljes csomag hossza.</li>
+     <li><strong>Identification + flags + fragment offset:</strong> a <strong>tördelés (fragmentáció)</strong> kezelése. A flagek közt van a „Don't Fragment” (DF) és a „More Fragments” (MF); az offset adja meg, a tördelt csomag melyik bájtjától tartalmaz adatot.</li>
+     <li><strong>TTL (Time To Live, 8 bit):</strong> minden router eggyel csökkenti; ha 0-ra ér, a csomag eldobódik (és ICMP üzenet megy a feladónak). Ez akadályozza meg, hogy a <em>hurokba</em> került csomagok örökké keringjenek.</li>
+     <li><strong>Protocol (8 bit):</strong> melyik felsőbb protokollnak kell átadni a tartalmat (TCP, UDP, ICMP…).</li>
+     <li><strong>Header checksum (16 bit):</strong> csak a <em>fejléc</em> ellenőrzőösszege (újraszámolódik minden hopnál, mert a TTL változik).</li>
+     <li><strong>Forrás- és célcím:</strong> 32 bites hoszt-azonosítók.</li>
+    </ul>`},
+   {id:"t-cimzes", title:"IPv4-címzés és alhálózatok (CIDR)", short:"Dotted-decimal írásmód, prefix és maszk.",
+    body:`<p>Az IPv4-cím 32 bites előjeltelen egész — összesen 2<sup>32</sup> ≈ 4,29 milliárd azonosító. Mivel a 2554524783-féle szám olvashatatlan, a címet 8 bitenként négy 1 bájtos számra tördeljük: ez a <strong>dotted-decimal</strong> írásmód (pl. 152.66.244.111).</p>
+    <p>A címek csoportokba, <strong>alhálózati prefixekbe</strong> szervezhetők. Ennek az a haszna, hogy egy egész alhálózathoz <em>egyetlen</em> routing bejegyzés elég, mert a kívülről nézve a hosztok ugyanazon a prefixen „látszanak”. A cím két részre oszlik: az első X bit az <strong>alhálózat-azonosító</strong>, a maradék 32−X bit a <strong>hoszt-azonosító</strong>. Az X-et a prefix-hossz (pl. /18) vagy a netmask (pl. 255.255.192.0) adja meg.</p>
+    <p>A <strong>CIDR (Classless Inter-Domain Routing, 1993 óta)</strong> váltotta fel a régi, merev címosztályokat (A/B/C). A CIDR-ben bármekkora alhálózat létrehozható (VLSM — Variable Length Subnet Masking), nem csak /8, /16, /24. A klasszikus osztályok ma már csak történelmi jelentőségűek.</p>
+    <p><strong>Maszkolás (gyakori számolós feladat):</strong> annak eldöntéséhez, hogy egy cím beletartozik-e egy prefixbe, vesszük a prefix-hossznyi (X) felső bitet mindkettőből, és összevetjük. Pl. 192.168.199.100 benne van-e a 192.168.192.0/18-ban? Az első 18 bit mindkettőben „11000000 10101000 11” — megegyezik, tehát igen.</p>`,
+    plain:`a prefix olyan, mint egy irányítószám-tartomány. A /18 azt mondja, hogy „az első 18 számjegy a városrész, a többi a házszám”. Ha két cím első 18 bitje egyezik, akkor ugyanabban a „városrészben” laknak, és a postás egyetlen bejegyzéssel kezelheti mindet — nem kell minden házat külön felírnia.`},
+   {id:"t-forwarding", title:"Forwarding vs. routing és az LPM", short:"RIB/FIB és a legspecifikusabb bejegyzés szabálya.",
+    body:`<p>Ezt a két fogalmat az anyag külön kiemeli, mert állandóan összekeverik őket — és a vizsgán is szeretik számon kérni.</p>
+    <ul>
+     <li><strong>Forwarding (csomagtovábbítás):</strong> egy konkrét csomag eljuttatása a <em>következő</em> hopra, a csomag célcíme alapján, a továbbítási tábla szerinti next-hopra. Ez a <em>hop-by-hop</em> működés: minden router csak a következő állomást dönti el, nem a teljes utat.</li>
+     <li><strong>Routing (útvonalválasztás):</strong> maga a továbbítási tábla <em>kitöltése</em>, fenntartása és frissítése — ezt dedikált routing protokollok végzik.</li>
+    </ul>
+    <p>A táblákat is meg kell különböztetni: a <strong>RIB</strong> (Routing Information Base) protokollonként egyedi (egy routeren több is futhat, pl. OSPF + BGP); a <strong>FIB</strong> (Forwarding Information Base) a RIB-ek <em>összefésüléséből</em> áll elő, és ez alapján továbbítódnak a csomagok.</p>
+    <p>A keresés kulcsa a <strong>Longest Prefix Match (LPM)</strong>: ha egy célcímre több bejegyzés is illik, a <em>legspecifikusabb</em> (a legtöbb biten illeszkedő) prefixet választjuk. Példa: a 192.168.0.0/16, /17, /18, /19 bejegyzések közül a 192.168.1.1-re a /17 a leghosszabb illeszkedés. Az LPM rendkívül hasznos (rengeteg funkció épül rá), de meg is nehezíti a továbbítást — innen a routerek FIB-keresési problémája (8. fejezet).</p>`},
+   {id:"t-szallitas", title:"Szállítási réteg: TCP és UDP", short:"Megbízható adatfolyam vs. gyors, de garancia nélküli datagram.",
+    body:`<p>A szállítási réteg az <em>alkalmazások</em> közti adatátvitelt biztosítja; az egyes alkalmazásokat a <strong>portszám</strong> (TCP/UDP port) címzi. A TCP/IP-ben két fő protokoll van, és a vizsgán a kettő szembeállítása klasszikus kérdés:</p>
+    <ul>
+     <li><strong>TCP (Transmission Control Protocol):</strong> összeköttetés-alapú, <em>megbízható adatfolyam</em> két hoszt adott portjai között. Sorrendhelyes, csomagvesztés- és hibavédett; <strong>folyamszabályozás</strong> (a vevő elárasztása ellen) és <strong>torlódásvezérlés</strong> (a hálózati torlódás ellen) jellemzi; több viszonyt multiplexál.</li>
+     <li><strong>UDP (User Datagram Protocol):</strong> összeköttetésmentes datagram-szolgáltatás. Átviteli hiba ellen véd (CRC), de <em>nem megbízható</em>: nem véd csomagvesztés, sorrendcsere vagy duplikálás ellen, és nincs kézfogás (handshake). Cserébe gyors és egyszerű.</li>
+    </ul>
+    <p>Hüvelykujjszabály: ahol minden bájt számít (fájl, weboldal) → TCP; ahol a sebesség/késleltetés fontosabb, mint a tökéletesség (élő hang/videó, DNS-lekérdezés) → UDP.</p>`},
+   {id:"t-homokora", title:"Az IP „homokóra” modell", short:"A keskeny derék: minden az IP-n megy át — ezért nehéz cserélni.",
+    body:`<p>Ez a fejezet egyik legfontosabb képe — és megmagyarázza, miért nem terjed az IPv6, és miért bukik el sok jó ötlet. A protokoll-stacket egy <strong>homokórához</strong> hasonlítjuk: felül sokféle alkalmazás és szállítási protokoll, alul sokféle link-technológia, középen pedig egyetlen, keskeny „derék”: az <strong>IP</strong>.</p>
+    <p>Az IP a „legnagyobb közös osztó”: minden csomag áthalad rajta, és minden hoszt érti — ez tette lehetővé az igazi <em>internetworkinget</em>, a heterogén hálózatok összekapcsolását. De pont ezért szinte lehetetlen megváltoztatni: bármit cserélnél a derékon, az egész világnak egyszerre kéne átállnia.</p>
+    <p>Ezt nevezik <strong>„internet ossification”-nek</strong> (megcsontosodás): az IP-szintű újítások (IPv6, IP multicast, Secure BGP/DNS) évtizedek óta léteznek, mégis alig terjednek, mert a kompatibilitás kényszere mindenkit a meglévő deréknál tart. A 2. fejezet anomáliái (512k day, prefix hijacking, IPv4-fogyás) mind ennek a megcsontosodásnak a tünetei.</p>`,
+    plain:`az IP olyan, mint a vasúti sínek szabványos nyomtávja. Bármilyen vonatot (alkalmazást) építhetsz fölé, és bármilyen talajra (linkre) fektetheted — de magát a nyomtávot kicserélni rémálom, mert akkor egyszerre kéne átépíteni a világ összes sínjét és vonatát. Ezért ragadunk meg a régi, néha szűkös szabványnál.`}
+  ]
+},
+{
+  id:"ch4", num:4, subject:SUBJECT,
+  title:"Az útvonalválasztás alapjai",
+  intro:"Most rendszerezzük az útvonalválasztás fajtáit, mielőtt rátérnénk az internet sajátos, üzleti logikájú útválasztására. A cél egy osztályozási fa felépítése (statikus/dinamikus, központi/elosztott, link-state/path-vector), és annak megértése, miért éppen path-vector protokoll (a BGP) való az AS-ek közé. A vizsgán a fa minden ágát és a „Nagy négyes” protokollt tudni kell, valamint az IGP/EGP együttműködést a rekurzív next-hop visszafejtéssel.",
+  topics:[
+   {id:"t-rvf", title:"Routing vs. forwarding (ismétlés)", short:"Útvonal-tervezés vs. egy konkrét csomag továbbítása.",
+    body:`<p>Mivel a két fogalom folyton összemosódik, az anyag itt is élesen elválasztja őket (érdemes a 3. fejezetbeli LPM-mel együtt átismételni):</p>
+    <ul>
+     <li><strong>Forwarding:</strong> egyenként, a célcím alapján a FIB szerinti next-hopra továbbítjuk a csomagot — hop-by-hop. Ez csak helyesen beállított és karbantartott FIB mellett működik.</li>
+     <li><strong>Routing:</strong> a topológia terjesztése és a FIB kitöltése/fenntartása/frissítése. Ezt dedikált <strong>routing protokollok</strong> végzik.</li>
+    </ul>
+    <p>Másképp: a routing „megírja a térképet és a táblázatot”, a forwarding pedig „aszerint hordja ki a leveleket”.</p>`},
+   {id:"t-statdin", title:"Statikus vs. dinamikus útválasztás", short:"Kézi beállítás vs. magát adaptáló protokoll.",
+    body:`<p>Az első elágazás az osztályozási fában: ki tölti ki a FIB-et?</p>
+    <ul>
+     <li><strong>Statikus útválasztás:</strong> az operátor <em>manuálisan</em> konfigurál (pl. CLI-n). Egyszerű, és tetszőleges beállítás megvalósítható vele — de <strong>nem skálázódik</strong> és <strong>nem adaptálódik</strong> a topológia változásaihoz (hiba esetén nem talál kerülőutat). Ezért ritkán használt, jellemzően csak kis vagy speciális esetekben.</li>
+     <li><strong>Dinamikus útválasztás:</strong> egy dedikált routing protokoll állítja a FIB-eket. <strong>Adaptív és skálázható</strong> — de cserébe az utakat a protokoll logikája szabja meg (pl. csak per-destination legrövidebb út). Ez az elterjedt megoldás.</li>
+    </ul>`},
+   {id:"t-kozpel", title:"Központi vs. elosztott", short:"Egy szerver dönt mindent, vagy a routerek egymás közt.",
+    body:`<p>A dinamikus útválasztás tovább bomlik aszerint, hogy <em>hol</em> születik a döntés:</p>
+    <ul>
+     <li><strong>Központi:</strong> egy dedikált szerver (route-szerver, PCE, SDN-kontroller) állítja be az összes router FIB-jét. Globálisan optimális döntés lehetséges, de egy ponton múlik minden (single point of failure, skálázási korlát).</li>
+     <li><strong>Elosztott:</strong> a routerek <em>egymás közt</em> cserélnek topológia-leíró információt, és mindegyik <em>saját maga</em> tölti ki a FIB-jét. Ez az internet választása.</li>
+    </ul>
+    <p>Az elosztott működés menete: (1) a szomszédos routerek felfedezik egymást; (2) megosztják a topológiával vagy a lehetséges útvonalakkal kapcsolatos „routing state”-jüket; (3) ezt folyamatosan frissítik (elosztott adatbázist tartva fenn); (4) minden router minden ismert prefixre kiválasztja a legjobb utat, és annak next-hopját letölti a FIB-be.</p>`},
+   {id:"t-lspv", title:"Link-state vs. path-vector", short:"Teljes térkép vs. ismert, járható útvonalak listája.",
+    body:`<p>Az elosztott útválasztás kulcskérdése: <em>mit</em> osztanak meg egymással a routerek? Ez a tárgy szempontjából a legfontosabb megkülönböztetés, mert ez dönti el, miért BGP megy az AS-ek közé.</p>
+    <ul>
+     <li><strong>Link-state:</strong> a megosztott információ maga a <strong>topológia</strong> — minden router ismeri a teljes gráfot, és rugalmasan választhat valamilyen „távolság” szerint. Ez azonban csak akkor konvergál konzisztens utakhoz, ha <em>minden</em> router ugyanazt a policy-t/metrikát használja (pl. „legrövidebb út az AS-en belül”).</li>
+     <li><strong>Path-vector:</strong> a megosztott információ az <strong>átjárható útvonalak</strong> listája. A next-hop az ismert utak közül a „legjobb”; <em>nem kell</em> globális távolság-metrika, és — ez a lényeg — <strong>routerenként (AS-enként) egyedi policy</strong> állítható be.</li>
+     <li><strong>Distance-vector:</strong> a régi megközelítés (csak távolság), ma kihalóban.</li>
+    </ul>
+    <p>Mivel az AS-ek <em>egyenként, titokban, egymásnak ellentmondó</em> üzleti szempontok szerint döntenek, a globális közös metrikát igénylő link-state itt nem működne — ezért az internet AS-szintű protokollja path-vector (BGP).</p>`,
+    plain:`a link-state olyan, mintha mindenkinek lenne ugyanaz a Google Térképe, és mind a legrövidebb utat számolná. A path-vector ezzel szemben olyan, mint amikor mindenki csak azt mondja a szomszédjának: „hozzám így meg így tudsz eljutni” — és mindenki maga dönti el, melyik ajánlatot fogadja el. Ez utóbbi bírja el, hogy mindenkinek más-más (titkos, üzleti) érdeke legyen.`},
+   {id:"t-igpegp", title:"IGP vs. EGP — a „Nagy négyes”", short:"AS-en belüli és AS-ek közötti protokollok.",
+    body:`<p>Az internet hierarchiaszintjein különböző protokollok futnak, attól függően, hogy az AS-en belül vagy az AS-ek között vagyunk:</p>
+    <ul>
+     <li><strong>Intra-domain routing (AS-en belül):</strong> Interior Gateway Protocol (<strong>IGP</strong>). Itt a policy tipikusan homogén (pl. legrövidebb út), ezért <em>link-state</em> a természetes választás.</li>
+     <li><strong>Inter-domain routing (AS-ek között):</strong> Exterior Gateway Protocol (<strong>EGP</strong>). Itt heterogének az útválasztási szempontok, ezért <em>path-vector</em> kell.</li>
+    </ul>
+    <p>A „Nagy négyes”, amit fejből illik tudni:</p>
+    <table><thead><tr><th></th><th>Link-state</th><th>Vector</th></tr></thead>
+    <tbody>
+     <tr><td><strong>IGP</strong></td><td>OSPF, IS-IS</td><td>RIP (kb.)</td></tr>
+     <tr><td><strong>EGP</strong></td><td>—</td><td>BGP</td></tr>
+    </tbody></table>
+    <p>Feloldva: OSPF = Open Shortest Path First, IS-IS = Intermediate-System-to-Intermediate-System, RIP = Routing Information Protocol, BGP = Border Gateway Protocol.</p>`},
+   {id:"t-igpegpegyutt", title:"IGP/EGP együttműködés", short:"iBGP/eBGP és a rekurzív next-hop visszafejtés.",
+    body:`<p>Egy routeren általában <em>több</em> protokoll fut párhuzamosan — legalább egy EGP és egy IGP —, mindegyik saját RIB-et épít, és a <strong>FIB-menedzser</strong> ezekből szintetizálja a FIB-et. Ez a fejezet egyik legtöbbet kérdezett, „összerakós” témája.</p>
+    <p>Az AS-ek közt futó BGP-t gyakran <strong>eBGP</strong>-nek (external) hívják; a külső útvonalakat azonban az AS-en <em>belül</em> is terjeszteni kell — erre szolgál az <strong>iBGP</strong> (internal). Példa: ha AS2 hirdeti a 10.1.1.0/24 prefixet, az eBGP-n eljut a határrouterekig, majd iBGP-n szétterjed az AS-en belül.</p>
+    <p>A trükkös rész a <strong>rekurzív next-hop visszafejtés</strong>: egy iBGP-n kapott útvonal next-hopja gyakran egy <em>nem közvetlenül szomszédos</em> router. Ilyenkor az IGP (pl. OSPF) RIB-jében kell megkeresni, hogyan jutunk el ahhoz a routerhez, és a végső, valóban szomszédos next-hopot tesszük a FIB-be.</p>
+    <p>Ha egy prefix több RIB-ben is szerepel, az operátor által rendelt <strong>súlyok</strong> döntenek — tipikus sorrend: <em>lokális &lt; statikus &lt; OSPF &lt; eBGP &lt; iBGP</em> (a kisebb súlyú protokoll nyer; a lokális utat mindig azonnal elfogadjuk). Az „eBGP &lt; iBGP” preferencia következménye, hogy a szomszéd AS-től kapott utat előnyben részesítjük a saját AS-en belüli routertől kapott előtt — ez vezet a <strong>hot-potato routinghoz</strong> (7. fejezet).</p>`}
+  ]
+},
+{
+  id:"ch5", num:5, subject:SUBJECT,
+  title:"Az üzleti modell és a valley-free routing",
+  intro:"Itt kapcsolódik össze a technika és az üzlet — ez a tárgy gerince. Az alaptétel: az interneten a forgalom arra halad(hat), amerre a cash-flow. Az AS-AS kapcsolatok kétféle üzleti viszonyt tükröznek (tranzit és peer), és ezekből vezethető le, mely útvonalak engedélyezettek és melyek tiltottak. A vizsgán biztosan jön a valley-free szabály, a p/c/r gráfreprezentáció, a p*r?c? regex, és a prefer-customer reláció — ezeket számolni is tudni kell.",
+  topics:[
+   {id:"t-tranzitpeer", title:"AS-kapcsolatok: tranzit vs. peer", short:"Fizetett globális hozzáférés vs. ingyenes kölcsönös csere.",
+    body:`<p>Két AS tipikusan kétféle kapcsolatot létesíthet, és ez a megkülönböztetés az egész fejezet alapja:</p>
+    <ul>
+     <li><strong>Tranzit (provider–customer):</strong> az egyik AS (a szolgáltató) <em>pénzért</em> globális internet-hozzáférést ad a másiknak (az előfizetőnek). A jelölésben az előfizetőtől a szolgáltató felé mutató <strong>nyíl</strong> a cash-flow ($) irányát adja.</li>
+     <li><strong>Peer:</strong> két AS „ingyen” cseréli a forgalmat egymás és egymás összes előfizetője között. A jelében <em>nincs nyílhegy</em>, jelezve, hogy nincs pénzáramlás.</li>
+    </ul>
+    <p>A kulcsmondat, amit érdemes szó szerint megjegyezni: <strong>az interneten a forgalom arra halad(hat), amerre a cash-flow.</strong> Ebből következik minden további szabály.</p>`},
+   {id:"t-engtiltott", title:"Engedélyezett és tiltott utak", short:"A megvalósuló utak az ISP-k gazdasági érdekeit tükrözik.",
+    body:`<p>A ténylegesen megvalósuló utak az ISP-k gazdasági érdekeit képezik le. Egy út egy AS szempontjából:</p>
+    <ul>
+     <li><strong>engedélyezett</strong>, ha megegyezik a gazdasági érdekeivel — pl. egy előfizetőtől induló vagy ott végződő forgalom átvitele (ezért fizetnek neki, ez profit);</li>
+     <li><strong>tiltott</strong>, ha a gazdasági érdekeivel ellentétes — pl. két szolgáltatója közti forgalom átvitele az AS-en keresztül, amire <em>nem</em> szerződött (ez ingyen-tranzit lenne, vagyis veszteség).</li>
+    </ul>
+    <p><strong>Tranzitnál</strong> engedélyezett az előfizető és <em>bármely</em> AS közötti út (a szolgáltatón át), tiltott viszont a szolgáltató→előfizető→másik szolgáltató „átmenő” út.</p>
+    <p><strong>Peernél</strong> engedélyezett a két peer között, illetve egy előfizető és a peer (sőt az előfizető előfizetője) között haladó forgalom; tiltott viszont minden, ami a peer-kapcsolaton keresztül <em>tranzitot</em> adna ingyen (pl. az egyik AS szolgáltatója és a peer szolgáltatója között) — hiszen azért pénz járna.</p>`},
+   {id:"t-valleyfree", title:"Valley-free routing", short:"A „völgyek” tiltása a tranzit-hierarchiában.",
+    body:`<p>A fenti engedélyezett/tiltott kritériumok együttes neve <strong>valley-free routing</strong>. A név onnan jön, hogy a szabály <em>tiltja a „völgyeket”</em> a tranzit-hierarchiában: ha lefelé (előfizető felé) indultunk el, többé nem mehetünk felfelé (szolgáltató felé) — mert az ingyen-tranzitot jelentene.</p>
+    <p>A formális definíció (ezt szó szerint érdemes tudni): egy útvonal megengedett, ha az élei sorrendben:</p>
+    <ol>
+     <li>először <strong>nulla vagy több</strong> előfizető→szolgáltató (felfelé, „provider”) él,</li>
+     <li>majd <strong>nulla vagy egy</strong> peer↔peer él,</li>
+     <li>végül <strong>nulla vagy több</strong> szolgáltató→előfizető (lefelé, „customer”) él.</li>
+    </ol>
+    <p>Vagyis a megengedett út profilja egy „hegy”: felmegyünk, legfeljebb egyszer átlépünk egy peer-élen a tetőn, majd lejövünk. Egy „völgy” (lefelé, majd újra felfelé) tilos.</p>`,
+    plain:`képzelj el egy hegyet. A forgalom felkapaszkodhat a szolgáltatókon át (felfelé, ezért fizetünk), a tetőn egyszer átléphet egy „szomszéd ösvényre” (peer), majd lecsúszhat az előfizetők felé (lefelé, itt mások fizetnek nekünk). Amit tilos: lemenni a völgybe, majd újra felmászni — mert akkor valaki ingyen utaztatná a forgalmát rajtad keresztül, és te buknád a pénzt.`},
+   {id:"t-grafrep", title:"Gráfreprezentáció (p/c/r címkék)", short:"Címkézett irányított gráf a valley-free utak ellenőrzésére.",
+    body:`<p>Hogyan döntsük el számolással, hogy egy út valley-free-e? Építünk egy <strong>címkézett irányított gráfot</strong>: a pontok az AS-ek, az élek pedig:</p>
+    <ul>
+     <li>a tranzit él az <strong>előfizető→szolgáltató</strong> irányban: <strong>p</strong> (provider) címke;</li>
+     <li>a <strong>szolgáltató→előfizető</strong> irányban: <strong>c</strong> (customer) címke;</li>
+     <li>a peer él bármely irányban: <strong>r</strong> (peer) címke.</li>
+    </ul>
+    <p>Egy út címkesorozatát úgy kapjuk, hogy az út élei mentén leolvassuk a p/c/r címkéket. A valley-free ellenőrzéshez <strong>hátulról zárójelezve</strong> kiértékelünk egy „+” műveletet (a táblázat szerint); ha az eredmény ∞, az út <strong>tiltott</strong>, egyébként <strong>megengedett</strong>:</p>
+    <table><thead><tr><th>+</th><th>c</th><th>p</th><th>r</th><th>∞</th></tr></thead>
+    <tbody>
+     <tr><td><strong>c</strong></td><td>c</td><td>∞</td><td>∞</td><td>∞</td></tr>
+     <tr><td><strong>p</strong></td><td>p</td><td>p</td><td>p</td><td>∞</td></tr>
+     <tr><td><strong>r</strong></td><td>r</td><td>∞</td><td>∞</td><td>∞</td></tr>
+    </tbody></table>
+    <p>Gyakorlati emlékeztető: tiltott az út, ha tartalmaz <strong>cp, cr, rp vagy rr</strong> részsorozatot. Ekvivalens tétel: egy valley-free út címkesorozata illeszkedik a <strong>p*r?c*</strong> reguláris kifejezésre (akárhány p, legfeljebb egy r, akárhány c — ebben a sorrendben).</p>
+    <p>Példa: a <em>p, p, c, r, c</em> sorozat tartalmaz „rc” utáni „cr”/„rp” gondot → kiértékelve ∞ → tiltott. A <em>p, p, c, c</em> sorozat viszont p-re értékelődik ki → megengedett.</p>`},
+   {id:"t-prefercust", title:"Prefer customer és legrövidebb AS-út", short:"A pénzügyileg legkedvezőbb, majd a legrövidebb út preferenciája.",
+    body:`<p>Ha több valley-free út is elérhető egy célhoz, melyiket válassza az AS? A pénz dönt — ez a <strong>„prefer customer”</strong> szabály. A preferencia attól függ, milyen az út <em>első</em> éle (mert a kalkulus végeredménye éppen az első él címkéje):</p>
+    <ol>
+     <li><strong>előfizető felé</strong> (szolgáltató→előfizető, c él): biztosan ingyen, sőt nekünk fizetnek — <em>legjobb</em>;</li>
+     <li><strong>peer felé</strong> (r él): valószínűleg ingyen (kivéve paid peering), de vigyázni kell a peering policy szimmetria-feltételére — <em>középső</em>;</li>
+     <li><strong>szolgáltató felé</strong> (előfizető→szolgáltató, p él): tranzitdíjat kell fizetni — <em>legrosszabb</em>.</li>
+    </ol>
+    <p>Tételszerűen: <strong>P<sub>c</sub> &lt; P<sub>r</sub> &lt; P<sub>p</sub></strong> (a reláció a <em>kevésbé</em> preferált felé mutat). Vagyis a customer út a legpreferáltabb, a provider út a legkevésbé.</p>
+    <p>Ha több <em>azonos</em> preferenciájú út marad, akkor jön a második szempont: a <strong>legrövidebb AS-út</strong> (kevesebb AS-en halad át). Fontos sorrend: <em>először a preferencia, csak utána a hossz!</em> A prefer-customer nem mindig ad „jó” utat (előfordulhat, hogy egy hosszú előfizetői láncot választ egy rövid tranzit helyett) — az operátor autonóm döntése, és a valós ISP-policy-k ennél jóval összetettebbek lehetnek.</p>`}
+  ]
+},
+{
+  id:"ch6", num:6, subject:SUBJECT,
+  title:"A Border Gateway Protocol (BGP)",
+  intro:"A valley-free routing eddig csak modell volt — a routerek nem ismerik a gráfot. A gyakorlatban az AS-ek a BGP-vel, elosztottan érvényesítik a saját preferenciáikat. A BGP a de facto EGP-szabvány: maga a protokoll egyszerű, de a konfigurációja nehéz. A vizsgán tudni kell a működés folyamatát, az üzeneteket, a fő attribútumokat (AS_PATH, NEXT_HOP, LOCAL_PREF, COMMUNITY), a fix döntési mechanizmust, az alap konfigurációt, és hogy az import/export szűrőkkel hogyan valósul meg a valley-free routing.",
+  topics:[
+   {id:"t-bgppv", title:"BGP: a path-vector EGP", short:"Egyszerű protokoll, nehéz konfiguráció — a de facto szabvány.",
+    body:`<p>A gráfreprezentáció csak a mi modellünk; az internet routerei <em>nem</em> ismerik a globális gráfot. Az utakat autonóm szereplők alakítják, elosztottan, a saját preferenciáik szerint — ezért kell egy olyan protokoll, amely (a) nem igényel globális távolság-metrikát, (b) AS-enként egyedi policy-t enged. Ez a <strong>path-vector</strong>, és ezt valósítja meg a <strong>BGP</strong> (Border Gateway Protocol, jelenleg version 4).</p>
+    <p>Jellemzői: path-vector alapú <em>policy</em> routing protokoll, az interneten <strong>de facto szabvány EGP</strong>. Hosszú evolúció eredménye (BGP-1: 1989 / RFC 1105; BGP-4: 1995 / RFC 1771, CIDR-támogatással; azóta minimális változás). A feladata kettős: az AS-AS utak <strong>karbantartása</strong> és <strong>kiválasztása</strong>.</p>
+    <p>Fontos szemléleti pont, amit a tárgy hangsúlyoz: a protokoll <em>maga</em> egyszerű, a <em>konfigurációja</em> nehéz — mert a komplex üzleti policy-t a szűrők beállításával kell „kézzel” ráépíteni.</p>`},
+   {id:"t-bgpmuk", title:"BGP működése és üzenetei", short:"TCP-179 viszony, majd útvonalcsere és legjobb-út-választás.",
+    body:`<p>A BGP működésének menete három lépés: (1) szomszédos routerek <strong>BGP-viszonyt</strong> építenek ki egymás közt (TCP, <strong>179-es port</strong>); (2) AS-szintű útvonalakat <strong>cserélnek</strong> a szomszédokkal; (3) minden prefixre kiválasztják a <strong>legjobb AS-utat</strong>. A BGP-viszonyban lévő két router általában fizikailag is szomszédos, de lehet több routeren keresztül is.</p>
+    <p>A négyféle BGP-<strong>üzenet</strong> (tipikus vizsgakérdés):</p>
+    <ul>
+     <li><strong>Open:</strong> a BGP-viszony létrehozása két router között.</li>
+     <li><strong>Keep Alive:</strong> a viszony periodikus frissítése (életben tartás).</li>
+     <li><strong>Notification:</strong> a viszony lezárása.</li>
+     <li><strong>Update:</strong> az útvonal frissült — ezen belül <em>Announce</em> (új út hirdetése egy prefixre) vagy <em>Withdraw</em> (egy korábbi hirdetés visszavonása).</li>
+    </ul>
+    <p>A kapott hirdetéseket az AS egy <strong>BGP RIB</strong>-ben gyűjti (a bemeneti szűrés után), és minden prefixre kiválasztja az <strong>aktív utat</strong>, amely a FIB-be kerül.</p>`},
+   {id:"t-nlri", title:"BGP hirdetés: NLRI és AS_PATH", short:"Melyik prefix, és milyen AS-sorozaton át érhető el.",
+    body:`<p>Egy BGP <strong>hirdetés = prefix + attribútumok</strong>. A célpontok a meghirdetett IP-prefixek; egy prefixhez alapesetben egy út tartozik, és a prefixen belüli minden IP-címre ugyanaz az út.</p>
+    <ul>
+     <li><strong>NLRI (Network Layer Reachability Information):</strong> megadja, <em>mely prefix(ek)re</em> vonatkozik a hirdetés (pl. 10.0.1.0/24). Több prefix is belefoglalható, sőt IPv6 és multicast címek is kódolhatók.</li>
+     <li><strong>AS_PATH:</strong> a prefix felé vezető <em>AS-út</em>, vagyis az érintett AS-számok listája. Ahogy a hirdetés AS-ről AS-re halad, mindegyik AS <em>elé</em> írja a saját számát. Pl. ha AS100 hirdeti a 10.0.1.0/24-et, a szomszéd AS200-nál az AS_PATH „200 100”, AS300-nál „300 200 100”, és így tovább.</li>
+    </ul>
+    <p>Lényeges, hogy a p/c/r címkéket a BGP <strong>nem ismeri és nem terjeszti</strong> (ezek üzleti titkok!). Egy AS csak a <em>közvetlen</em> szomszédjával tudja, milyen típusú (tranzit/peer) a kapcsolata; a távolabbi AS-AS kapcsolatok típusa rejtve marad. Ezért a policy-t nem a címkékkel, hanem a szűrőkkel valósítjuk meg.</p>`},
+   {id:"t-illem", title:"Illemszabályok és hurokelkerülés", short:"Mit garantál egy hirdetés, és hogyan kerüljük a hurkot.",
+    body:`<p>A BGP-hirdetéseknek két fontos „illemszabálya” (jelentése) van — ezt a vizsgán szeretik kifejtetni:</p>
+    <ol>
+     <li><strong>Hirdetés generálása egy prefixre:</strong> az AS azt <em>garantálja az egész internetnek</em>, hogy ő a prefix jogos felhasználója. A hirdetés minden internet-routerhez eljut — de ezt <strong>senki nem ellenőrzi</strong> (innen a prefix hijacking, lásd 2. és 7. fejezet).</li>
+     <li><strong>Hirdetés továbbítása:</strong> az AS azt <em>vállalja a szomszédnak</em>, hogy a prefix forgalmát továbbítja a cél felé — lehetőleg módosítás/lehallgatás nélkül. Ha mégsem teszi, az forgalmi „fekete lyuk” (black-hole).</li>
+    </ol>
+    <p><strong>Hurokelkerülés:</strong> mivel az AS_PATH felsorolja az érintett AS-eket, a hurok triviálisan kiszűrhető. A szabály: egy BGP-router <em>nem fogad el</em> olyan hirdetést, amelynek AS_PATH-jában megtalálja a <strong>saját AS-számát</strong> — hiszen az azt jelentené, hogy az út már áthaladt rajta.</p>`},
+   {id:"t-attrib", title:"NEXT_HOP, LOCAL_PREF, COMMUNITY", short:"A legfontosabb BGP-attribútumok és szerepük.",
+    body:`<p>A fő attribútumok és funkciójuk:</p>
+    <ul>
+     <li><strong>NEXT_HOP:</strong> a meghirdetett úthoz tartozó következő ugrás IP-címe. A hirdetést elfogadó router ezt rendeli a prefixhez a FIB-jében; továbbításkor a saját kimenő IP-címére állítja.</li>
+     <li><strong>LOCAL_PREF (lokális preferencia):</strong> az <em>egyik legfontosabb</em> attribútum — megadja, melyik hirdetést preferáljuk egy prefixre. Ezzel fordítjuk le az AS útválasztási preferenciáit BGP-konfigurációvá (pl. prefer-customer). Mivel <em>lokális</em>, eBGP-viszonyon <strong>nem</strong> küldhető (csak az AS-en belül, iBGP-n).</li>
+     <li><strong>AS_PATH:</strong> (lásd külön) az AS-sorozat; hurokelkerülésre és úthossz-méréshez is.</li>
+     <li><strong>ORIGIN, MED (Multi-Exit Discriminator):</strong> a döntési mechanizmus további bemenetei (a MED a beérkező forgalom irányítására, lásd hot-potato).</li>
+     <li><strong>COMMUNITY / EXTENDED COMMUNITIES:</strong> tetszőleges „címkék”, amelyeket egyes hirdetésekhez rendelhetünk. Tranzitívak (eBGP-n is küldhetők). A valley-free konfigurációban ezzel jelöljük meg, kitől (előfizető/peer/szolgáltató) kaptuk a hirdetést.</li>
+    </ul>`},
+   {id:"t-dontes", title:"BGP döntési mechanizmus", short:"Fix prioritási sorrend; a policy közvetetten érvényesül.",
+    body:`<p>Ha egy router több hirdetést kap ugyanarra a prefixre, a <strong>döntési mechanizmus</strong> választja ki az aktív utat (ami a FIB-be kerül). A mechanizmus <strong>fix</strong>; mi csak <em>közvetetten</em>, az attribútumok beállításával (import/export szűrőkkel) tudjuk befolyásolni. A prioritási sorrend (érdemes fejből tudni):</p>
+    <ol>
+     <li><strong>Magasabb LOCAL_PREF</strong> — még akkor is, ha hosszabb az AS-út! (Elsődleges szolgáltató kiválasztása, határrouterek összehangolása.)</li>
+     <li><strong>Rövidebb AS_PATH</strong> (legrövidebb AS-út).</li>
+     <li><strong>Alacsonyabb MED</strong> (a szomszéd AS jelzése a belépési pontról).</li>
+     <li><strong>eBGP-től kapott út</strong> az iBGP-től kapott előtt (forgalommenedzselés az AS-en belül → hot-potato).</li>
+     <li><strong>Kisebb IGP-költség</strong> a határrouterig.</li>
+     <li><strong>Alacsonyabb router-id</strong> — a végső „döntetlenoldó”, hogy mindig egyértelmű legyen a győztes.</li>
+    </ol>
+    <p>A lényeg: mivel a LOCAL_PREF van legfelül, az AS gyakorlatilag a lokális preferencia állításával „felülírhatja” az úthosszt — ez teszi lehetővé a prefer-customer megvalósítását.</p>`},
+   {id:"t-bgpconf", title:"BGP-konfiguráció alapjai", short:"router bgp, router-id, network, neighbor.",
+    body:`<p>A minimális BGP-konfiguráció néhány sorból áll (Cisco-szerű/FRR-szintaxis). Ezt a négy elemet kell ismerni:</p>
+    <ul>
+     <li><code>router bgp &lt;AS-szám&gt;</code> — BGP-folyamat indítása a saját AS-számmal.</li>
+     <li><code>bgp router-id &lt;cím&gt;</code> — egyedi azonosító a routernek (legtöbbször a loopback-cím), hogy hivatkozni lehessen rá.</li>
+     <li><code>network &lt;prefix&gt;</code> — a saját, hirdetendő címtartomány. (Garantálni kell, hogy tényleg a miénk!)</li>
+     <li><code>neighbor &lt;cím&gt; remote-as &lt;AS&gt;</code> — a BGP-szomszéd címe és AS-száma.</li>
+    </ul>
+    <p>Tipikus példa (R1, AS100, két szomszéddal):</p>
+    <pre>router bgp 100
+ bgp router-id 10.0.0.1
+ network 10.1.0.0/24
+ neighbor 10.0.1.2 remote-as 200
+ neighbor 10.0.2.2 remote-as 300</pre>
+    <p>Ennyi elég ahhoz, hogy a router BGP-viszonyt építsen és hirdesse a prefixét — de a <em>policy</em> még nincs benne, az a szűrőkben jön.</p>`},
+   {id:"t-szurok", title:"Import/export szűrők (valley-free BGP-ben)", short:"A policy-t bemeneti és kimeneti szűrőkkel valósítjuk meg.",
+    body:`<p>Mivel a döntési mechanizmus fix, a valley-free routingot a <strong>szűrőkkel</strong> kell megvalósítani. Az alapelv: egy AS csak azok közül az utak közül választhat, amelyeket <em>meghirdetnek</em> neki — és csak azt használhatja, amit a szomszéd <em>hirdet</em>. Tehát ha valamit nem hirdetünk tovább, azt a szomszéd nem is használhatja.</p>
+    <p>A megvalósítás két lépés:</p>
+    <ol>
+     <li><strong>Import szűrő (in):</strong> a kapott hirdetéseket <em>megcímkézzük</em> COMMUNITY-vel aszerint, kitől kaptuk — előfizetőtől: 1:100, peertől: 1:200, szolgáltatótól: 1:300. (A saját prefix nem kap címkét.)</li>
+     <li><strong>Export szűrő (out):</strong> a COMMUNITY-érték szerint szűrünk a kimeneten. A szabályok:
+       <ul>
+         <li><strong>Előfizető felé:</strong> <em>minden</em> utat hirdetünk (nincs szűrés) — az előfizetőtől jövő minden út valley-free.</li>
+         <li><strong>Peer és szolgáltató felé:</strong> csak az <em>előfizetőtől kapott</em> (1:100) és a <em>saját</em> prefixeket hirdetjük; a peertől (1:200) és szolgáltatótól (1:300) kapott utakat <strong>kiszűrjük</strong> — mert ezek továbbadása ingyen-tranzit lenne.</li>
+       </ul>
+     </li>
+    </ol>
+    <p>Konfigurációs vázlat (FRR/Cisco-szerű): az import oldalon <code>route-map ... permit</code> + <code>set community 1:200</code>, a szomszédhoz kötve <code>neighbor ... route-map ... in</code>. Az export oldalon egy <code>ip community-list</code> sorolja fel a tiltott community-ket, és egy <code>route-map ... deny</code> dobja el az illeszkedőket (egy üres, alacsonyabb prioritású <code>permit</code> engedi át a többit, mert a route-map alapértelmezett kimenete deny).</p>`,
+    plain:`minden beérkező levélre ráírjuk egy színes matricával, hogy „ezt egy előfizetőtől / peertől / szolgáltatótól kaptam”. Amikor továbbküldünk, megnézzük a matricát: az előfizetőnek mindent elküldünk, de a peernek és a szolgáltatónak csak azt, amit előfizetőtől kaptunk vagy ami a sajátunk. Így biztos, hogy soha nem cipelünk ingyen olyan forgalmat, amiért mások fizetnének.`}
+  ]
+},
+{
+  id:"ch7", num:7, subject:SUBJECT,
+  title:"BGP útválasztási stratégiák",
+  intro:"A valley-free szabályon túl az ISP-knek finomabb stratégiákra is szükségük van, mert egy szuboptimális út profitveszteséget vagy épp támadási felületet jelent. Ez a fejezet a gyakorlati BGP-trükköket veszi sorra: prefer-customer LOCAL_PREF-fel, prefix hijacking elleni védekezés, prefix- és AS-út-szűrés, backup routing AS-path prependinggel, hot-potato/MED, forgalommenedzsment és a stabilitás (BGP-oszcilláció, Gao–Rexford). A vizsgán a konkrét megoldási mintákat kérdezik.",
+  topics:[
+   {id:"t-prefcustbgp", title:"Prefer customer BGP-ben", short:"LOCAL_PREF-emelés import szűrőn az előfizetői utakra.",
+    body:`<p>A prefer-customer szabály (5. fejezet) BGP-ben triviálisan megvalósul, mert a <strong>LOCAL_PREF</strong> a döntési mechanizmus legmagasabb prioritású tényezője. Az ötlet: az előfizetőktől érkező hirdetések LOCAL_PREF-jét egy <strong>import szűrőn</strong> magas értékre állítjuk, így a BGP automatikusan ezeket preferálja.</p>
+    <p>Gyakorlatban: az alapértelmezett LOCAL_PREF legyen 100; az előfizetői import szűrőn állítsuk 200-ra:</p>
+    <pre>route-map rm-cust-in permit 10
+ set community 1:100
+ set local-preference 200
+!
+neighbor 10.0.2.2 route-map rm-cust-in in</pre>
+    <p>Több teendő nincs — a BGP innentől a magas LOCAL_PREF-ű (előfizetői) utat választja. Érdekes mellékhatás: ezzel a <strong>legrövidebb AS-út</strong> szabály is „ingyen” teljesül az azonos preferenciájú előfizetői utak között, mert ott a LOCAL_PREF egyenlő, és így az úthossz dönt. (A peer és provider utak közt viszont külön kéne válogatni.)</p>`},
+   {id:"t-hijackmitm", title:"Prefix hijacking és MITM", short:"Hamis hirdetéssel elnyelt vagy lehallgatott forgalom.",
+    body:`<p>Mivel a BGP nem hitelesít, bárki meghirdethet egy idegen prefixet (lásd YouTube-incidens). Példa: AS100 legitim módon hirdeti a 10.1.0.0/24-et, de AS300 (tévedésből vagy rosszindulattal) is meghirdeti ugyanezt. A közös szolgáltató (AS200) nem tudja eldönteni, melyik a valódi — szerencsés esetben a legitim utat preferálja, rossz esetben a támadóét teszi a FIB-be, és a teljes forgalmat AS300 felé tereli.</p>
+    <p>Két forgatókönyv:</p>
+    <ul>
+     <li><strong>Black-hole:</strong> a támadó „elnyeli” a forgalmat → a prefix elérhetetlenné válik (gyakran ez véletlen, mint a YouTube-nál).</li>
+     <li><strong>MITM (man-in-the-middle):</strong> a támadó <em>lehallgatja</em> a forgalmat, akár káros tartalmat is beilleszt, majd <em>továbbküldi</em> a valódi célnak — így az áldozat észre sem veszi. (Megvalósítható pl. egy statikus route-tal a valódi cél felé.)</li>
+    </ul>
+    <p><strong>Védekezés:</strong> (1) folyamatos <em>monitorozás</em> (looking glass / RouteViews szerverek, ping/traceroute); (2) <em>Secure BGP</em> — kriptográfiailag aláírt hirdetések (egyelőre nem terjedt el); (3) a jogos tulajdonos <em>specifikusabb</em> prefixeket hirdet (pl. /25-öket a /24 helyett, hogy az LPM felülírja a támadót — de a /25-öket gyakran szűrik); (4) a jogosulatlan hirdetések szűrése egy megbízható adatbázis (<strong>IRR — Internet Routing Registry</strong>) alapján.</p>`,
+    plain:`a hijacking olyan, mintha valaki hamis táblát tenne ki: „ide a YouTube”. Ha elnyeli a leveleket, az oldal egyszerűen eltűnik. Ha viszont okos, elolvassa a leveledet, esetleg belerondít, majd továbbküldi az igazi címzettnek — és te semmit nem veszel észre. Védekezni monitorozással és aláírt „táblákkal” (Secure BGP) lehetne, de utóbbit alig használják.`},
+   {id:"t-prefszures", title:"Prefix szűrés (Martians, bogon)", short:"Csak a jogos prefixek elfogadása; tiltott tartományok kiszűrése.",
+    body:`<p>A védekezés egyik gyakorlati eszköze, hogy egy AS csak az <em>elvárt</em> prefixeket fogadja el az egyes szomszédoktól. Ezt <strong>prefix-listával</strong> valósítjuk meg:</p>
+    <pre>ip prefix-list AS100 seq 5 permit 10.1.0.0/24
+ip prefix-list AS100 seq 10 deny 0.0.0.0/0 le 32
+!
+neighbor 10.0.1.1 prefix-list AS100 in</pre>
+    <p>A „<code>deny 0.0.0.0/0 le 32</code>” minden mást elutasít (a <code>le 32</code> nélkül csak a default route-ot tiltanánk). Két speciális tiltandó kategória:</p>
+    <ul>
+     <li><strong>Martian prefixek:</strong> speciális célra foglalt tartományok, amelyek <em>soha nem</em> jelenhetnek meg az inter-domain routingban — pl. 0.0.0.0/8, 127.0.0.0/8 (loopback), a privát tartományok (10/8, 172.16/12, 192.168/16), 169.254.0.0/16 (auto-config), 224.0.0.0/4 (multicast), 240.0.0.0/4 (foglalt).</li>
+     <li><strong>Bogon prefixek:</strong> az IANA által (még) ki nem osztott címtartományok. Az IANA rendszeresen publikálja a kiosztott listát; ami nincs rajta, az bogon. Érdemes a hirdetéseiket és a belőlük jövő csomagokat is eldobni (sok DDoS-támadás bogon forráscímről indul).</li>
+    </ul>`},
+   {id:"t-asszures", title:"AS-utak szűrése", short:"Reguláris kifejezés az AS_PATH-ra.",
+    body:`<p>Néha nem a prefix, hanem a teljes <strong>AS-út</strong> alapján akarunk szűrni — pl. egy kormányzat nem akarja az érzékeny forgalmát egy adott (nem megbízható) AS-en, mondjuk Kínán át vinni. A BGP ezt is támogatja: a hirdetések az AS_PATH alapján szűrhetők, <strong>reguláris kifejezéssel</strong>.</p>
+    <p>Az AS_PATH az AS-számok aláhúzással elválasztott listájaként illeszthető. Példák:</p>
+    <pre>! AS200-at érintő minden út tiltása
+ip as-path access-list 2 deny _(100|200)_
+! AS100-AS200 részút engedélyezése
+ip as-path access-list 1 permit 100_200
+! AS300 háromszoros prepend-jének eldobása
+ip as-path access-list 3 deny _300_300_</pre>
+    <p>A szűrőt a szokásos <code>neighbor ...</code> paranccsal kötjük a megfelelő szomszéd megfelelő irányához (in/out). Így precízen kizárhatók a nem kívánt AS-eken átvezető utak.</p>`},
+   {id:"t-backup", title:"Backup routing és AS-path prepending", short:"Másodlagos út; a backup utat hosszabbnak „hazudjuk”.",
+    body:`<p>Multi-homed AS-eknél gyakori felállás: egy <strong>elsődleges</strong> és egy <strong>backup</strong> szolgáltató, ahol a backupot csak akkor használjuk, ha az elsődleges elérhetetlen. A <em>kimenő</em> forgalomra ez triviális (LOCAL_PREF-fel), de a <em>bejövő</em> irányt nehéz befolyásolni — hiszen azt a <em>távoli</em> AS-ek döntik el.</p>
+    <p>A naiv ötlet (csak hiba esetén hirdetni a backupon) rossz, mert a BGP-konvergencia percekig is tarthat. A bevett trükk az <strong>AS-path prepending</strong>: a backupon kiküldött hirdetésbe <em>többször beleírjuk a saját AS-számunkat</em>, így az út <em>hosszabbnak</em> tűnik, és a távoli AS-ek (a rövidebb AS-út szabály miatt) kevésbé preferálják.</p>
+    <pre>route-map rm-as-prepend permit 10
+ set as-path prepend 100 100 100
+!
+neighbor 10.0.2.2 route-map rm-as-prepend out</pre>
+    <p>Korlát: a prepending <em>nem mindig</em> hatékony. A backup szolgáltató és annak előfizetői a <strong>prefer-customer</strong> miatt akkor is a backup-úton routolnak (mert az nekik előfizetői út, ami magasabb prioritású, mint az úthossz). Erre a megoldás a <strong>„well-known” BGP community</strong>-k használata, amelyekkel jelezhetjük a szolgáltatónak, hogy az út csak backup.</p>`,
+    plain:`a bejövő forgalmat nem te irányítod, hanem mások. Ha azt akarod, hogy ne a tartalék kapun jöjjenek be hozzád, „elhúzod” a tartalék utat: úgy hirdeted meg, mintha sokkal hosszabb lenne (ötször leírod a saját neved). A legtöbben így a rövidebb fő kaput választják. De a közvetlen tartalék-szolgáltatód a saját üzleti szabálya miatt makacsul a tartalék úton küldhet — neki külön „címkével” (community) kell szólni.`},
+   {id:"t-hotpotato", title:"Hot potato routing és MED", short:"A csomagot a lehető leghamarabb átpasszoljuk a szomszédnak.",
+    body:`<p>A <strong>hot potato routing</strong> azt jelenti, hogy egy AS a forgalmat a <em>legrövidebb</em> belső úton, a <em>legközelebbi kilépési ponton</em> passzolja át a szomszédnak — így a legkevesebb terhelést okozza a saját hálózatán. (A döntési mechanizmusban ez az „eBGP &lt; iBGP, illetve kisebb IGP-költség a határrouterig” lépésekből adódik.)</p>
+    <p>Ami az egyik AS-nek hot potato, az a szomszédnak gyakran <strong>cold potato</strong>: ő viszi tovább messzire a forgalmat. Példa: egy szolgáltató New York és London POP-pal; ha a forgalmat azonnal a legközelebbi POP-on kidobja, neki olcsó, de a másiknak drága. Hogy ki vállalja a hosszú belső szállítás költségét, az előzetes megállapodás kérdése.</p>
+    <p>Az irányok kezelése:</p>
+    <ul>
+     <li><strong>Kimenő forgalom:</strong> iBGP + LOCAL_PREF (mi döntjük el, melyik kilépési pont).</li>
+     <li><strong>Bejövő forgalom:</strong> a <strong>MED (Multi-Exit Discriminator)</strong> attribútum — alacsonyabb MED a preferált belépési pont. Ezzel jelezzük a szomszédnak, melyik linkünkön „lépjen be” hozzánk.</li>
+    </ul>`},
+   {id:"t-forgstab", title:"Forgalommenedzsment és stabilitás", short:"Terheléselosztás; a BGP-oszcilláció veszélye.",
+    body:`<p>A backup ellentéte a <strong>forgalommenedzsment</strong>: a terhelés egyenletes elosztása egy multi-homed AS szolgáltatói között. A kimenő irány könnyű (LOCAL_PREF), a bejövő a nehéz — ezt <strong>Ingress Traffic Engineering</strong>-gel próbáljuk befolyásolni. Tipikus eszköz a <strong>deaggregáció</strong>: a címtartományt két egyenlő részre vágjuk (pl. /16 → két /17), és külön linkeken hirdetjük, így a bejövő forgalom eloszlik. Ára: minden /17 <em>plusz</em> FIB-bejegyzés az egész interneten — a hirdetések 5–10%-a ilyen deaggregált prefix, ami az internet skálázhatatlanságának egyik fő oka.</p>
+    <p><strong>Stabilitás:</strong> a BGP-vel minden AS függetlenül érvényesíti a saját policy-jét — de mi garantálja, hogy ezek a független döntések egyértelmű, „jó” utakhoz <em>konvergálnak</em>? A válasz: <strong>semmi</strong>. Ellentmondó preferenciák esetén <strong>BGP-oszcilláció</strong> léphet fel: a routerek nem tudnak megegyezni, az utak folyamatosan frissülnek (a „stable paths” probléma általában <em>NP-nehéz</em>). Oszcillációt okozhat a <em>flapping</em> interfész is (másodpercenként többször fel/le), ami minden állapotváltásról hirdetést küld az egész internetre.</p>
+    <p>Két fontos megállapítás: a <strong>Gao–Rexford-tétel</strong> szerint ha minden AS a „valley-free + prefer-customer” szabályt követi, oszcilláció <em>nem lehetséges</em>; a flapping ellen pedig a <strong>BGP Route Flap Damping</strong> (RFC 2439) véd, amely késlelteti az ismétlődő Update-eket.</p>`}
+  ]
+},
+{
+  id:"ch8", num:8, subject:SUBJECT,
+  title:"Az IP routerek felépítése és a FIB-keresés",
+  intro:"Eddig az útválasztás logikájáról volt szó; most lemegyünk a vasig. Egy router fő feladata a csomagtovábbítás, és ennek legidőigényesebb lépése a FIB-keresés: a célcímhez tartozó legspecifikusabb prefix (LPM) megtalálása. A vizsgán tudni kell a router felépítését (control/data plane, fast/slow path, generációk), és a három LPM-megoldást: TCAM (hardver), prefix fa/trie (szoftver), valamint a FIB-aggregáció.",
+  topics:[
+   {id:"t-routertipus", title:"Routerek típusai és felépítése", short:"Edge/core/access; control card, linecard, backplane.",
+    body:`<p>A csomagtovábbítás lépései minden routerben: a csomag <em>ellenőrzése</em> (formátum, verzió, fejléchossz, checksum), a <strong>FIB-keresés</strong> (a célcímhez a legspecifikusabb next-hop), a <strong>TTL</strong> csökkentése (0 esetén eldobás + ICMP), a fejléc-checksum <em>újraszámolása</em>, majd a továbbítás a next-hop felé.</p>
+    <p>Típusok szerep szerint (RFC 4098): <strong>edge/border router</strong> (AS-ek között, iBGP+eBGP+IGP), <strong>core router</strong> (AS-en belül POP-ok között, IGP+iBGP), <strong>access router</strong> (az edge-forgalom koncentrálása a core felé). Megvalósítás szerint: <strong>soft router</strong> (általános CPU + szoftver, pl. PC + Linux + FRR/Quagga — kis ISP, IXP, BGP-monitor, cloud) vagy <strong>HW router</strong> (speciális hardver, nagy ISP-k core/edge routerei).</p>
+    <p>Az általános felépítés három fő egysége:</p>
+    <ul>
+     <li><strong>Vezérlőkártya (control plane):</strong> a router „logikája” — routing protokollok futtatása, menedzsment (CLI, SNMP), a FIB beállítása. Általános célú CPU + DRAM, néha teljes OS (pl. Linux).</li>
+     <li><strong>Interfészkártya (linecard, data plane):</strong> a tényleges csomag adás/vétel, alapvető továbbítási funkciók — speciális HW (ASIC, hálózati processzor) + gyors SRAM.</li>
+     <li><strong>Interconnect / backplane:</strong> a kártyák és a CPU közti kapcsolólogika + pufferelés (osztott busz vagy belső switch). Itt jelentkezik pl. a <em>head-of-line blocking</em> probléma.</li>
+    </ul>`},
+   {id:"t-fastslow", title:"Fast path vs. slow path", short:"Adatsík (gyors) vs. vezérlősík beavatkozása (lassú).",
+    body:`<p>A csomagtovábbítás kétféle „pályán” mehet, és ez dönti el a sebességet:</p>
+    <ul>
+     <li><strong>Fast path:</strong> a data plane-en, hardverben megvalósított lépések — célcím olvasása, checksum, és (ha a FIB le van töltve a linecardra) maga a FIB-keresés. Nagyon gyors, nem igényli a CPU-t.</li>
+     <li><strong>Slow path:</strong> a vezérlősík (CPU) beavatkozását igénylő, „bonyolultabb” feladatok — IP-opciók, fragmentáció, protokollüzenetek kezelése, ARP, ICMP-generálás. Lényegesen lassabb.</li>
+    </ul>
+    <p>A cél, hogy a csomagok döntő többsége a fast path-en maradjon — ehhez kell a FIB-et a linecardokra letölteni (lásd a router-generációkat).</p>`},
+   {id:"t-generaciok", title:"Router-generációk", short:"Közös CPU → FIB-cache → teljes FIB minden linecardon.",
+    body:`<p>A routerek fejlődése három generációban, jól vizsgáztatható módon:</p>
+    <ol>
+     <li><strong>1. generáció:</strong> a hálózati csatolón kívül minden a slow path-en van — <em>minden</em> csomag igényli a közös CPU beavatkozását. Lassú, a CPU a szűk keresztmetszet.</li>
+     <li><strong>2. generáció:</strong> a linecardon megjelenik egy <strong>FIB-cache</strong> (+ input puffer). Ha a célcím a cache-ben van, fast path-en megy; ha nincs, a CPU-hoz fordul. Gyorsabb, de a cache-találat aránya korlátoz.</li>
+     <li><strong>3. generáció:</strong> minden linecardon ott a <strong>teljes FIB</strong>, így szinte minden csomag fast path-en marad. A CPU már csak „egy kártya a többi között”, switched backplane-nel összekötve.</li>
+    </ol>
+    <p>Kitekintés a jövőre: a hagyományos routerek műveletei és azok sorrendje <em>fixek</em> („black-box” switch). A cloud, 5G, IoT, private WAN igényeihez ez túl merev — innen a <strong>programozható adatsík</strong> és az <strong>SDN</strong> (OpenFlow, P4): a csomagfeldolgozás, a fejlécformátumok és a „match-action” táblák programozhatóvá válnak („white-box” switch, nyílt control–data plane interfész).</p>`},
+   {id:"t-lpmprob", title:"FIB-keresés: az LPM-probléma", short:"A legspecifikusabb prefix megtalálása — naivan O(N).",
+    body:`<p>A továbbítás legidőigényesebb feladata a célcímhez tartozó next-hop megkeresése a FIB-ben, méghozzá a <strong>legspecifikusabb (leghosszabb) illeszkedő prefix</strong> (LPM) szerint. A FIB-et a control CPU tölti le a linecardokra, hogy azok fast path-en továbbíthassanak.</p>
+    <p>Miért nehéz? Egy naiv megoldás végigkeresné az összes bejegyzést és megjegyezné a legtöbb biten illeszkedőt — ez <strong>O(N)</strong>, ahol N a bejegyzések száma. A gyakorlatban azonban N ≈ 10<sup>6</sup>, és az időkeret rendkívül szűk: pl. 500 bájtos csomagokkal 10&nbsp;Gbit/s sebességen, 1&nbsp;GHz órajelen alig <strong>~400 órajel</strong> jut egy csomagra. Ennyi idő alatt egymillió bejegyzést végigkeresni lehetetlen — kell egy okosabb adatstruktúra. Két fő irány van: a hardveres <strong>TCAM</strong> és a szoftveres <strong>prefix fa</strong>.</p>`},
+   {id:"t-tcam", title:"TCAM", short:"Tartalomcímezhető memória „don't care” bitekkel.",
+    body:`<p>A <strong>CAM (Content Addressable Memory)</strong> a klasszikus RAM ellentéte: a RAM cím alapján ad adatot, a CAM viszont az <em>adathoz</em> keresi meg annak <em>címét</em> (és ha több illik, az első/legkisebb címet adja). A <strong>TCAM (Ternary CAM)</strong> annyiban több, hogy a mintákban a 0/1 mellett „don't care” (*) bit is megadható. Pl. az <code>101**</code> minta illeszkedik a 10100, 10101, 10110, 10111 lekérdezésekre; a * bárhol állhat, és az alacsonyabb címen lévő minta felülbírálja a magasabbat (prioritás).</p>
+    <p><strong>LPM TCAM-mel:</strong> a prefix bitjeit pontosan megadjuk, a hoszt-azonosítót * bitekkel töltjük fel (mert azok nem számítanak az LPM-ben). Egy fontos trükk: a bejegyzéseket <strong>prefix-hossz szerint csökkenő sorrendbe</strong> kell rendezni, hogy a leghosszabb (legspecifikusabb) prefix kerüljön a legalacsonyabb (legmagasabb prioritású) címre — különben egy rövidebb prefix elnyomhatná a hosszabbat. A TCAM kiadja a találat címét, amivel egy hozzákapcsolt RAM-ot címzünk, abból olvassuk ki a next-hopot. Pár órajel alatt kész — ez a HW fast path lelke; használják MAC-tanulásra és tűzfalszabályokra is.</p>
+    <p>Hátrányok: a TCAM-cella drága (16 tranzisztor/cella, szemben az SRAM 6, DRAM 2 tranzisztorával) és sokat fogyaszt/melegszik (egy ~9&nbsp;MB-os csip 10–15&nbsp;W). Ezért nem mindenhová való.</p>`,
+    plain:`a normál memória olyan, mint egy szekrény: megmondod a fiók számát, kiveszed a tartalmát. A TCAM fordítva működik: odamutatsz egy mintát, és egyszerre az összes fiók „jelentkezik”, hogy „én illek rá!”. A * azt jelenti, „ezek a számjegyek mindegy”. Mivel mindenki egyszerre válaszol, villámgyors — cserébe drága és melegszik, mint egy bekapcsolva felejtett vasaló.`},
+   {id:"t-prefixfa", title:"A prefix fa (trie)", short:"LPM-re optimalizált szoftveres faszerkezet.",
+    body:`<p>Ahol a TCAM nem éri meg (soft router, egyszerű SOHO-router, virtualizált/cloud router), ott szoftveres megoldás kell, amely minimalizálja a (legdrágább) memóriaolvasások számát. Erre való a <strong>(bináris) prefix fa</strong>, más néven trie.</p>
+    <p>A működés: a fa élei 0/1 címkével vannak ellátva, és egy <strong>prefix = a gyökértől egy pontig vezető út élcímkéinek sorozata</strong>. A prefixhez tartozó pontot megjelöljük a next-hop „címkéjével” (a tényleges next-hopokat egy külön <em>next-hop index</em> táblában tároljuk). Az üres leveleket elhagyjuk (NULL pointer) — így kisebb a fa.</p>
+    <p><strong>Keresés (LPM):</strong> a gyökérből indulva sorra olvassuk a keresett cím bitjeit, és a megfelelő (0 vagy 1) élen lépünk tovább. Közben egy <code>output</code> változóban folyamatosan eltároljuk a <em>legutoljára látott érvényes címkét</em>. Levélhez vagy NULL-hoz érve kilépünk, és az <code>output</code>-hoz tartozó next-hopot adjuk vissza — ez automatikusan a leghosszabb illeszkedés. A beszúrás/törlés/módosítás hasonló: követjük a bitek által kijelölt utat.</p>
+    <p>Komplexitás: a műveletek <strong>O(W)</strong> lépésben végeznek, ahol W a címtér szélessége (IPv4: 32, IPv6: 128) — illetve N prefix esetén jellemzően <strong>O(log N)</strong>, ami nagyságrendekkel jobb a táblázatos O(N)-nél.</p>`},
+   {id:"t-aggregacio", title:"FIB-aggregáció", short:"A tábla tömörítése összevonható bejegyzésekkel.",
+    body:`<p>A 32 bites RAM-olvasások (főleg cache-en kívül) lassúak, ezért érdemes a FIB-et kisebbre tömöríteni. A <strong>FIB-aggregáció</strong> a prefix fát egy kisebb, de keresés szempontjából <em>teljesen ekvivalens</em> formába alakítja át — pl. levélcímkézett normalizált fa, optimalizált bináris fa, szinttömörített (level-compressed) fa.</p>
+    <p>Az ötlet, hogy ha több szomszédos prefix ugyanarra a next-hopra mutat, azok összevonhatók egyetlen, kevésbé specifikus bejegyzéssé. Fontos feltétel: az aggregáció csak <strong>teljesen specifikált (32 bites) IP-címekre</strong> garantálja az LPM-mel azonos eredményt — tetszőleges prefix-lekérdezésekre nem feltétlenül. Ez a tömörítés enyhít a routing táblák növekedésének (512k day) problémáján, de nem oldja meg teljesen — különösen a deaggregált (forgalommenedzsment célú) prefixek miatt.</p>`}
+  ]
+},
+{
+  id:"ch9", num:9, subject:SUBJECT,
+  title:"Network address translation (NAT)",
+  intro:"A NAT az egyik fő ok, amiért még nem fogytak el végleg az IPv4-címek. Az alapötlet: belül privát címeket használunk, és a router határán átírjuk őket publikussá. A vizsgán tudni kell a privát tartományokat, az 1:1 és 1:N (PAT) működést, a conntrack táblát, a NAT-típusokat (STUN szerinti cone/symmetric), a NAT-átjárást (STUN/TURN/ICE), valamint a CGN-t. Fontos a sok mellékhatás is, mert a NAT alaposan megsérti a végpont-végpont elvet.",
+  topics:[
+   {id:"t-privat", title:"Privát IP-tartományok", short:"10/8, 172.16/12, 192.168/16 — belső használatra.",
+    body:`<p>Ha minden eszköznek globálisan egyedi (publikus) IP-címe lenne, az IPv4-címek már rég elfogytak volna. Erre már 1994-ben gondoltak (RFC 1597/1918), és kijelöltek három, kizárólag <strong>privát</strong> használatra szánt tartományt:</p>
+    <ul>
+     <li><strong>10.0.0.0/8</strong></li>
+     <li><strong>172.16.0.0/12</strong></li>
+     <li><strong>192.168.0.0/16</strong></li>
+    </ul>
+    <p>Ezeket bárki szabadon használhatja a saját belső hálózatában, de az interneten <em>nem</em> jelenhetnek meg, és <em>nem szabad</em> rájuk routolni (nem globálisan egyediek). A privát „szigeteknek” mégis el kell érniük az internetet — a hosztok routing táblájában van egy <strong>alapértelmezett átjáró</strong> (default gateway, a 0.0.0.0/0 bejegyzés, ami a legkevésbé specifikus, ezért minden más felülírja). A bökkenő: privát forráscímmel csomag nem mehet ki az internetre, és a túloldal sem tud privát célcímre válaszolni — ezért kell a címfordítás.</p>`},
+   {id:"t-natfajta", title:"NAT működése: 1:1 és 1:N (PAT)", short:"Cím- (és port-) átírás a router határán.",
+    body:`<p>A NAT lényege: az átjárónak beállított router a határon <strong>átírja</strong> az internet felé menő és onnan jövő csomagok forrás/cél IP-címét (és sokszor a TCP/UDP portját is), hogy a privát hoszt kommunikálhasson. Két fő fajta a felhasznált publikus címek száma szerint:</p>
+    <ul>
+     <li><strong>1:1 NAT (Basic NAT, one-to-one):</strong> egy publikus címhez egy privát cím. Kimenő csomagban a forrás privát cím helyére a hozzárendelt publikus cím kerül; bejövőben a cél publikus cím helyére a privát. Ehhez annyi publikus cím kell, ahány hoszt egyszerre kommunikálni akar — vagyis nem spórol címet.</li>
+     <li><strong>1:N NAT (one-to-many):</strong> egy publikus címen <em>több</em> privát hoszt osztozik — akár az egész belső hálózat egyetlen publikus címmel. Ez igazán csak a portok bevonásával működik: ezt Cisco-terminológiában <strong>PAT (Port Address Translation)</strong>-nak, pontosabban <strong>NAPT</strong>-nek hívják (Linuxban a 1 publikus címes változat: <em>masquerade</em>; több cím megadásakor: <em>SNAT</em>).</li>
+    </ul>
+    <p>Ha kívülről akarunk elérni egy belső szervert (amely nem ő kezdeményez), <strong>DNAT</strong> (destination NAT, otthoni routeren „port forward”) kell: egy állandó szabály, amely a tábla soha le nem járó bejegyzése. Pl. két belső webszerver mappelhető a router publikus címének 80-as és 81-es portjára.</p>`},
+   {id:"t-conntrack", title:"A NAT-tábla és a portok", short:"Fordítási (conntrack) tábla; méretkorlát.",
+    body:`<p>Hogyan tudja a router visszafelé szétválogatni a válaszokat? Egy <strong>fordítási táblát</strong> tart karban (Linuxban a <em>conntrack</em> tábla). Amikor egy belső alkalmazás kifelé indít kapcsolatot, a router kicseréli a forráscímet a sajátjára, és <em>bejegyzi a megfeleltetést</em>, hogy a visszafelé jövő csomagok célcímét a megfelelő privát címre tudja visszaírni. A bejegyzés tartalma: forrás/cél címek (porttal), reply-címek, protokoll-infó, időzítők, számlálók.</p>
+    <p>A <strong>portokról:</strong> a legtöbb implementáció a belső porttal megegyező külső portot próbál társítani; ha ütközés van (több belső hoszt ugyanarról a portról), az első megkapja, a többiek valamilyen stratégia szerint (tartományos vagy véletlen) kapnak szabad portot.</p>
+    <p>Mivel UDP/ICMP esetén nincs valódi „kapcsolat”, a router <strong>időzítőkkel</strong> tartja életben a bejegyzéseket (pl. kétirányú forgalomnál percekig, egyirányúnál csak másodpercekig). A <strong>tábla mérete</strong> korlátos: otthoni routereknél ~2k, OpenWrt-nél ~16k, üzleti routereknél (MikroTik) 200k+ bejegyzés. Egy bejegyzés ~160 bájt RAM. Ha a tábla betelik, új kapcsolat nem indítható — ez ellen a méret növelése, az időzítők rövidítése, vagy rate-limit/hosztonkénti korlát véd (pl. szándékos telítéses támadás esetén). A gyors WAN-portos routerek ma már hardveresen gyorsítják a NAT-olást.</p>`},
+   {id:"t-nattipus", title:"NAT-típusok (STUN RFC): cone/symmetric", short:"Full / restricted / port-restricted cone és symmetric.",
+    body:`<p>Hogy a NAT mögötti eszközök P2P kapcsolatot tudjanak építeni, ismerni kell, <em>milyen szabály szerint</em> dönti el a router, hogy mely bejövő csomagokat továbbítja befelé. Az STUN (RFC 3489) négy alaptípust definiál:</p>
+    <ul>
+     <li><strong>Full Cone:</strong> egy adott belső cím:port mindig ugyanarra a külső cím:portra mappelődik, és <em>bármely</em> külső hoszt küldhet erre a külső cím:portra — a csomag továbbítódik befelé. (A legengedékenyebb.)</li>
+     <li><strong>Restricted Cone:</strong> ugyanaz a mappelés, de csak attól a külső <em>IP-címtől</em> fogad, amelynek a belső hoszt korábban már küldött.</li>
+     <li><strong>Port Restricted Cone:</strong> mint az előző, de a szűrés a külső <em>portra</em> is kiterjed — csak arról a cím:portról fogad, amire a belső hoszt korábban küldött.</li>
+     <li><strong>Symmetric:</strong> a mappelés <em>cél-függő</em> — ugyanaz a belső cím:port más-más célhoz más-más külső cím:portot kap. És csak attól fogad, akinek korábban küldött. (A legszigorúbb, P2P-re a legnehezebb.)</li>
+    </ul>
+    <p>A valóságban ezeket gyakran kombinálják, ezért az RFC 4787 új, finomabb felosztást ad: <em>mapping</em> szerint (endpoint-independent / address-dependent / address-and-port-dependent) és <em>filtering</em> szerint ugyanígy.</p>`,
+    plain:`a NAT olyan, mint egy portás. A „full cone” portás bárkit beenged azon az ablakon, amit egyszer megnyitottál. A „restricted” csak azt, akinek te már írtál. A „port restricted” még a pontos „lakcímre+szobaszámra” is figyel. A „symmetric” portás pedig minden új címzetthez új ablakot nyit — emiatt kívülről kiszámíthatatlan, és így a legnehezebb két ilyen mögött összehozni egy közvetlen beszélgetést.`},
+   {id:"t-stunturn", title:"STUN, TURN, ICE", short:"NAT-átjárás P2P kapcsolatokhoz (pl. VoIP, WebRTC).",
+    body:`<p>Miért érdekel ez minket? Mert vannak technikák, amelyek két NAT mögötti eszköz között is képesek <strong>peer-to-peer</strong> kapcsolatot építeni — pl. SIP-telefonok (VoIP) közvetlen RTP hangfolyamhoz, vagy WebRTC-s böngészők. (Alternatíva, hogy a SIP-szerver maga végződteti az RTP-t, de az nagy terhelés.)</p>
+    <ul>
+     <li><strong>STUN (Session Traversal Utilities for NAT, RFC 5389; régen RFC 3489):</strong> egy külső szerver segítségével a belső hoszt megtudja a saját <em>publikus</em> cím:portját, és felderíti a NAT típusát. Ezzel a legtöbb NAT-típus esetén már össze tud kapcsolódni a másik féllel. (A böngészőkben be vannak állítva STUN-szerverek, pl. a Google-é.)</li>
+     <li><strong>TURN (Traversal Using Relays around NAT, RFC 5766):</strong> ha a közvetlen kapcsolat nem megy (pl. symmetric NAT), egy <em>relay</em> szerver továbbítja a csomagokat — látszólag mindkét fél a TURN-szerverrel beszél. Nagy forgalmú, ezért általában jelszavas.</li>
+     <li><strong>ICE (Interactive Connectivity Establishment, RFC 5245):</strong> a „keretrendszer”, amely <em>iteratívan</em> végigpróbálja a lehetőségeket — először direkt kapcsolat, ha nem megy STUN, ha az sem akkor TURN. Több jelöltet tár fel, prioritást rendel hozzájuk, és a kapcsolat alatt is karbantartja a listát, így hálózati változáskor azonnal átválthat.</li>
+    </ul>`},
+   {id:"t-egyebnat", title:"Egyéb: hairpin, DMZ, port triggering/knocking", short:"Speciális NAT-technikák és problémák.",
+    body:`<p>A NAT sok mellékhatással jár (a vizsgán hasznos felsorolni): sérül a <em>végpont-végpont</em> elv; a rétegezést sértő protokollok (SIP, FTP) eltörnek, mert IP/portot is hordoznak a payloadban (ezt az <strong>ALG — Application-Level Gateway</strong> modulok orvosolják, pl. SIP ALG, FTP ALG); alapból nem üzemeltethető szerver NAT mögött (megoldás: DNAT); a belső hoszt nem ismeri a router publikus címét (gond a dinamikus DNS-nél); és a NAT megnehezíti a VPN-eket.</p>
+    <p>Speciális technikák:</p>
+    <ul>
+     <li><strong>Hairpin NAT:</strong> amikor a belső hálózatból a saját belső szerverünket a <em>publikus</em> címmel akarjuk elérni (a beállított port-forward miatt). Egyes routerek ezt nem tudják, másoknál gyári, megint másoknál szabályokkal megoldható.</li>
+     <li><strong>DMZ host:</strong> a router minden, máshová nem illeszkedő csomagot egyetlen kijelölt belső gépnek továbbít. Hasznos változó portszámú vagy portszám nélküli (pl. GRE) protokolloknál.</li>
+     <li><strong>Port triggering:</strong> ha egy belső hoszt egy „trigger” portra küld, akkor egy ideig a megadott bejövő portra kívülről érkező csomagok hozzá kerülnek (pl. IRC esetén a 113-as visszakapcsolódáshoz).</li>
+     <li><strong>Port knocking:</strong> a rendszer figyeli, hogy egy IP-ről a megadott portokra a megfelelő <em>sorrendben</em> és időablakban érkeznek-e csomagok; ha igen, végrehajt egy parancsot (pl. portnyitás a tűzfalon). Lehallgatás ellen nem véd.</li>
+    </ul>`},
+   {id:"t-cgn", title:"Carrier-grade NAT (CGN)", short:"Az ISP-k osztoznak a publikus IP-ken.",
+    body:`<p>A privát tartományok lassították az IPv4-fogyást, de mára annyi háztartás/mobil kapcsolódik, hogy a teljes IPv6-átállásig újabb trükk kellett: a <strong>Carrier-grade NAT (CGN / CGNAT, RFC 6598)</strong>. Itt maga az <strong>ISP</strong> NAT-ol — több előfizető osztozik egy publikus IP-n.</p>
+    <p>Erre külön tartományt jelöltek ki, a <strong>„Shared Address Space”-t (100.64.0.0/10)</strong>, amely publikusnak <em>tűnik</em>, de az interneten mégsem jelenik meg, mert szolgáltatói címfordításra való. Miért nem használhatják az ISP-k a sima privát tartományokat (pl. 10/8)? Mert az előfizető a <em>saját</em> belső hálózatában már használhatja ugyanazt, és ütköznének.</p>
+    <p>Sok magyar ISP alkalmazza (ezért van még szabad IPv4-ük); jellemzően kérhető, hogy az előfizetőt kivegyék a CGN mögül. A CGN gondot okoz: P2P-kommunikáció, IP-alapú tiltás/korlátozás (banki, közösségi oldalak), játékkonzolok (több előfizető azonos IP-n), valamint megfigyelő/riasztórendszerek távelérése terén.</p>`,
+    plain:`a sima NAT olyan, mint amikor egy egész lakás osztozik egy postaládán, és a portás (router) szétválogatja a leveleket a lakók közt. A CGN ennek a „lakóház” szintű változata: egy egész utca osztozik egyetlen postacímen, és a szolgáltató a központi portás. Praktikus, amíg nem akar valaki kívülről közvetlenül becsöngetni hozzád — mert akkor csak az utca közös címét látja.`}
+  ]
+},
+{
+  id:"ch10", num:10, subject:SUBJECT,
+  title:"Virtual Private Network (VPN)",
+  intro:"A VPN egy magánhálózat kiterjesztése nyilvános hálózaton (interneten) keresztül, általában titkosítva. Két fő használat: telephelyek összekötése (site-to-site) és távoli dolgozó becsatlakozása (remote access). A vizsgán a kulcs a rétegezés: melyik rétegen üzemel a VPN és melyiket emeli át; az ebből fakadó MTU/fragmentáció és TCP-meltdown problémák; valamint a konkrét protokollok (GRE, PPTP, IPsec+IKE tunnel/transport, SSTP, OpenVPN, WireGuard) jellemzői és NAT-barátsága.",
+  topics:[
+   {id:"t-vpnalap", title:"VPN-alapok: remote access vs. site-to-site", short:"Telephelyek összekötése vagy távoli dolgozó becsatlakozása.",
+    body:`<p>A VPN egy magánhálózatot terjeszt ki egy nyilvános hálózaton keresztül — általában titkosítva. Két alapeset:</p>
+    <ul>
+     <li><strong>Remote access VPN</strong> (point-to-site / client-to-site): egyetlen távoli dolgozó éri el a vállalati magánhálózatot (pl. otthonról a céges fájlszervert).</li>
+     <li><strong>Site-to-site VPN:</strong> teljes telephelyeket köt össze (pl. egy központ és két üzlet, ahol az üzletek kameráit a központból nézik, az üzletek pedig a központi raktárkészlet-szervert használják).</li>
+    </ul>
+    <p>Topológiák: hub-and-spoke (csillag, középen a központtal), full mesh (mindenki mindenkivel), point-to-point. A VPN cenzúra vagy földrajzi korlátozások megkerülésére is használható.</p>`},
+   {id:"t-vpnreteg", title:"VPN-rétegek és egymásba ágyazás", short:"Melyik rétegen üzemel, melyiket emeli át; MTU, TCP meltdown.",
+    body:`<p>A VPN két legfontosabb tulajdonsága: <strong>melyik rétegen üzemel</strong> a protokollja, és <strong>melyik réteget emeli át</strong> (tunnel). Az interneten direkten csak az IP (layer 3) fölötti VPN-ek mennek; helyi hálózaton layer 2-es (pl. VLAN) is. Az átemelt réteg általában IP (L3, ekkor a két oldal közt routing kell), de lehet Ethernet (L2) is — ez kiterjeszti a broadcast domaint (mintha egy switchen lennének), de ezt ritkán használják, mert a broadcast domaint inkább korlátozni szokás.</p>
+    <p>A VPN-ek <strong>egymásba ágyazhatók</strong> (pl. egy titkosított L3-VPN-en belül egy titkosítatlan L2-VPN). Ennek két tipikus gondja:</p>
+    <ul>
+     <li><strong>MTU/fragmentáció:</strong> minden beágyazás fejléceket ad hozzá, csökkentve a hasznos csomagméretet (MTU). Erre való a <strong>Path MTU Discovery (PMTUD)</strong>, amely az ICMP „Fragmentation Needed” (IPv4) / „Packet Too Big” (IPv6) üzeneteket figyeli — de mivel ICMP-alapú, és az ICMP gyakran tiltott, van rá ICMP-mentes változat is (RFC 4821).</li>
+     <li><strong>TCP meltdown:</strong> ha két, szállítási garanciát adó protokoll (pl. TCP-over-TCP) egymás fölött fut, az alsó réteg kapcsolat-javítása (újraküldés, ablakméret) közben a felső réteg <em>túlkompenzál</em> → nő a késleltetés, esik az átviteli sebesség. Mégis használnak magasabb rétegű (TCP feletti) VPN-eket, mert azokkal kevesebb gond a NAT és a tűzfalak.</li>
+    </ul>`,
+    plain:`a VPN olyan, mint egy boríték, amibe beleteszed az eredeti levelet, és titkosítva átküldöd a nyilvános postán. Ha borítékot borítékba teszel (egymásba ágyazás), egyre kevesebb hely marad a tényleges levélnek (MTU csökken). A TCP-meltdown pedig olyan, mint amikor két, egymás fölött dolgozó türelmetlen postás <em>egyszerre</em> kezd újraküldözgetni minden elveszettnek hitt levelet — összeakadnak, és minden belassul.`},
+   {id:"t-gre", title:"GRE", short:"Általános tunneling protokoll, titkosítás nélkül.",
+    body:`<p>A <strong>GRE (Generic Routing Encapsulation)</strong> egy általános alagút-protokoll: különböző rétegek fölött futhat, és különböző rétegű protokollokat szállíthat. Legtöbbször IP (L3) felett, a szállítási réteg szintjén (L4) használjuk, és IP-t szállít vele. Ilyenkor az IP-fejlécben a protokoll-azonosító <strong>47</strong>, a GRE fejléce pedig jelzi a beágyazott protokollt (IPv4-re 0x0800).</p>
+    <p>Amit szállíthat, azt csak az eszköz szabja meg, nem maga a protokoll (pl. MikroTik nem tud Ethernet-keretet GRE-be tenni, Cisco igen). Összeköthet vele IPv6-szigeteket IPv4 felett (és fordítva). <strong>Nem titkosít</strong>, ezért megbízhatatlan közegen (interneten) titkosított csatornában használjuk — tipikusan <em>IPsec transport módban</em>. Mivel L4-en van, de <strong>nincs portszáma</strong>, a <strong>NAT gondot okoz neki</strong>.</p>`},
+   {id:"t-pptp", title:"PPTP", short:"Régi protokoll; mára nem biztonságos.",
+    body:`<p>A <strong>PPTP (Point-to-Point Tunneling Protocol)</strong> egy TCP vezérlőcsatornát (1723-as port) és GRE-be ágyazott <strong>PPP</strong>-csomagokat használó VPN. (A GRE-fejléc itt egy „Call ID” mezővel bővül a tunnelek megkülönböztetésére; a PPP payloadot 0x880B jelzi.)</p>
+    <p>Rétegtanilag érdekes: mivel TCP vezérlőcsatornát használ, gyakran „a viszony rétegben (L5)” működőnek mondják; mivel a szállított PPP L2-ben van, „L2-keretet szállító” VPN-nek is. Az autentikációt, titkosítást, tömörítést a PPP intézi (NCP-k egyeztetik az L3-paramétereket, az LCP tartja a kapcsolatot). NAT-nál ALG (PPTP passthrough) segíti.</p>
+    <p>Miért használták: szinte minden eszköz támogatta. <strong>Miért nem ajánlott ma:</strong> mind az autentikációs protokolljai (CHAP, MS-CHAP-v1/v2), mind a titkosítása (RC4-alapú MPPE) <em>elavult és nem biztonságos</em>. Sok rendszerben már letiltották vagy figyelmeztetnek rá.</p>`},
+   {id:"t-ipsec", title:"IPsec és az IKE", short:"Titkosító/hitelesítő protokollcsomag az IP szintjén.",
+    body:`<p>Az <strong>IPsec</strong> egy autentikálásra és titkosításra szolgáló <em>protokollcsomag</em>, amely az <strong>IP szintjén (L3)</strong> működik, mintegy az IP kiegészítéseként. (Egy időben kötelezővé akarták tenni IPv6-nál, de ezt elvetették.) Emiatt „direkten” csak IPv4/IPv6 csomagok titkosítására való.</p>
+    <p>A kapcsolatfelépítésért az <strong>IKE (Internet Key Exchange)</strong> felel (UDP 500-as port), két fázisban: <em>Phase 1</em> — a felek azonosítják egymást, és felépítenek egy biztonságos csatornát maga az IKE védelmére (ez az IKE SA); <em>Phase 2</em> — ezen a védett csatornán létrehozzák a tényleges felhasználói forgalmat védő IPsec SA-kat.</p>
+    <p>Az <strong>SA (Security Association)</strong> tartalmazza pl. az IKE-verziót (IKEv1/v2), a titkosító algoritmust (DES/3DES/AES), a hash-t (MD5/SHA), a Diffie–Hellman-csoportot, az autentikációs módot (pre-shared key vagy tanúsítvány) és az élettartamot. Az IKEv1-nek két módja van (a biztonságosabb <em>main</em> 6 üzenettel, a gyorsabb <em>aggressive</em> 3-mal). Az <strong>IKEv2</strong> előnyei: <em>NAT-barát</em> (felismeri a NAT-ot, 4500-as UDP-portra vált), egyetlen, 4 üzenetes mód, EAP-támogatás, jobb DoS-védelem, kapcsolat-élőség érzékelése. Opcionális a <strong>Perfect Forward Secrecy (PFS)</strong>: ideiglenes kulcsok, így a privát kulcs későbbi megszerzésével sem fejthető vissza a régi forgalom.</p>
+    <p>Kétféle csomagvédelem: <strong>AH (Authentication Header)</strong> — garantálja a feladót és a sértetlenséget, de <em>nem titkosít</em>; <strong>ESP (Encapsulating Security Payload)</strong> — feladó + sértetlenség + <em>titkosítás</em>. Az SA-kat az <strong>SPI</strong> (Security Parameter Index) azonosítja.</p>`,
+    plain:`az IPsec olyan, mint egy páncélozott, lepecsételt boríték magán az IP-szinten. Az IKE a „kézfogás” a felépítéshez: először létrehoznak egy biztonságos asztalt a tárgyaláshoz (Phase 1), majd azon megegyeznek, pontosan hogyan zárják le a valódi leveleket (Phase 2). Az AH csak lepecsétel (látszik, de nem hamisítható), az ESP be is zárja (nem is olvasható).`},
+   {id:"t-modok", title:"Tunnel mód vs. transport mód", short:"Új IP-fejléc, vagy az eredeti megtartása.",
+    body:`<p>Az IPsec két beágyazási módja — klasszikus vizsgakérdés a különbség:</p>
+    <ul>
+     <li><strong>Tunnel mód:</strong> az eredeti csomag elé egy <em>új</em> IP-fejléc kerül (protokoll-azonosító 51 = AH, 50 = ESP). ESP-vel az eredeti IP-csomag <em>egésze</em> (a belső fejlécekkel együtt) titkosítva utazik, az új fejléc nem titkosított (így módosítható útközben, pl. NAT). AH-val az új fejléc is védett, ezért módosításkor a csomag eldobódik → AH <em>nem NAT-barát</em>. Két magánhálózat közti internetes VPN-re <strong>tunnel mód + ESP</strong> a javasolt: a routerek a publikus címükkel mint új forrás/cél címmel látják el a csomagot, az eredeti privát fejlécek titkosítva vannak.</li>
+     <li><strong>Transport mód:</strong> nincs új IP-fejléc; az AH/ESP fejléc az <em>eredeti</em> IP-fejléc <em>mögé</em> szúródik be. Az eredeti IP-fejléc így olvasható marad (ESP nem titkosíthatja). Önmagában „direkten” VPN nem építhető vele — viszont kisebb az overhead (legalább 20 bájttal, az IP-fejléc méretével), és tipikusan két hoszt közti forgalom védelmére vagy egy <em>másik</em> VPN (pl. GRE) beágyazásához használják (IPsec transport + GRE → a GRE biztonságossá válik, és kívülről nem is látszik, milyen protokollt titkosítunk).</li>
+    </ul>`},
+   {id:"t-modernvpn", title:"SSTP, OpenVPN, WireGuard", short:"Modern VPN-ek összevetése.",
+    body:`<p>Három mai protokoll, érdemes a jellemzőiket szembeállítani:</p>
+    <ul>
+     <li><strong>SSTP (Microsoft):</strong> SSL/TLS-t használ TCP felett (alapból a 443-as porton, így HTTPS-nek tűnik, szinte minden tűzfalon átmegy). PPP-be csomagolja az adatot, PKI-vel (szerver-tanúsítvány kell). Előny: Windows Vista SP1 óta beépített. Hátrány: máshol nincs előtelepítve, és csak TCP felett megy → <em>TCP-meltdown</em> veszély.</li>
+     <li><strong>OpenVPN:</strong> nyílt forráskódú, UDP (1194) vagy TCP felett (a TCP-t gyakran 443-ra teszik HTTPS-álcának); TLS/SSL-t használ (OpenSSL). <em>NAT-barát</em>, L3 és L2 forgalmat is átemel (TUN/TAP mód), site-to-site és remote access is, route push, opcionális tömörítés, „.ovpn” konfigfájl. Hátrány: az OpenSSL nagy kódbázisa (gyakori sebezhetőségek), nagy implementáció (beágyazott rendszereknél gond), nehéz hardveres gyorsítás, és TCP felett szintén TCP-meltdown.</li>
+     <li><strong>WireGuard:</strong> egyszerű, modern, gyors; IP-t emel át, IP felett UDP-t használ. Nagyon kis kódbázis (~4000 sor kernelmodul), a legmodernebb kriptográfia (Curve25519, ChaCha20, Poly1305…). A peereket a <em>publikus kulcsuk</em> azonosítja; nem gond se a NAT, se a roaming. Hátrány: új, ezért kevés eszköz/szolgáltató támogatja (még). Általános hardveren már gyorsabb és kisebb késleltetésű, mint az IPsec vagy az OpenVPN.</li>
+    </ul>
+    <p>A fejezet tanulsága: <strong>nincs univerzális, minden esetre tökéletes VPN</strong> — a választás sok tényező mérlegelése (réteg, NAT/tűzfal-barátság, sebesség, platformtámogatás, biztonság).</p>`}
+  ]
+},
+{
+  id:"ch11", num:11, subject:SUBJECT,
+  title:"Internet-architektúra: autonóm rendszerek",
+  intro:"Itt rakjuk össze a teljes képet: az internet önállóan menedzselt hálózatok (AS-ek) üzleti érdekek szerinti összekapcsolódása. Visszatérünk a tranzit-szolgáltatáshoz, és részletesen megnézzük a single-homed és multi-homed AS-eket, a PA/PI címzést és a default gateway buktatóit. A vizsgán a fogalmak (AS, ASN, edge/access/core, content/eyeball/transit AS) és a single/multi-homing előny-hátrány mérlege, valamint a tranzit-hurok elkerülésének szabálya a fontos.",
+  topics:[
+   {id:"t-as", title:"Az autonóm rendszer (AS) fogalma", short:"Egységesen menedzselt, önálló útválasztási domén.",
+    body:`<p>Az internet ISP-k, egyetemek, cégek, telco-k hálózatait köti egységes rendszerbe, ahol minden résztvevő a sajátját <em>autonóm</em> módon menedzseli. Az <strong>autonóm rendszer (AS)</strong> hosztok/routerek/hálózatok összessége, amelyet egy szervezet egységesen adminisztrál, és amely <em>egységes útválasztási policy-t</em> mutat az internet felé. Minden AS egyedi, ma 32 bites <strong>AS-azonosítóval (ASN)</strong> rendelkezik.</p>
+    <p>Példák a típusokra: <em>ISP</em> — Magyar Telekom (AS5483), Telenor; <em>campus</em> — BME (AS2547), Harvard (AS11), MIT (AS3); <em>enterprise</em> — IBM, Apple (AS714); <em>globális szolgáltató</em> — Sprint, Cogent (AS174), Telia. Egy szervezetnek <strong>több</strong> ASN-je is lehet.</p>
+    <p>Útválasztási szempontból az AS belül egységes (IGP — OSPF/IS-IS), kifelé pedig AS-enként külön policy-t érvényesít (EGP — BGP): mit hirdet/importál, milyen forgalmat enged át. Pl. AS2 átviheti AS1↔AS3 forgalmát, de blokkolhatja AS1↔AS4-et.</p>`},
+   {id:"t-astipus", title:"AS-típusok és Edge/Access/Core", short:"Content/eyeball/transit; a hálózat részei.",
+    body:`<p>Az AS-eket a forgalmi szerepük szerint csoportosíthatjuk:</p>
+    <ul>
+     <li><strong>Content AS:</strong> tartalomszolgáltató, a kimenő forgalom domináns (YouTube, Netflix).</li>
+     <li><strong>Eyeball AS:</strong> a tartalomfogyasztás domináns — nagy előfizetői bázist kiszolgáló ISP-k; nagy bemenő forgalom, kis késleltetési igény a content felé.</li>
+     <li><strong>Transit AS:</strong> globális adatátvitel (Cogent, Level3).</li>
+     <li><strong>CDN (Content Delivery Network):</strong> content + globális tranzit (Akamai).</li>
+    </ul>
+    <p>Egy alternatív, „földrajzi” felosztás a hálózat részeire:</p>
+    <ul>
+     <li><strong>Edge:</strong> a végberendezések és lokális hálózatok (desktop, mobil, data center, ipari rendszerek), egy szolgáltatóhoz bekötve. A <strong>CPE</strong> (Customer-Premises Equipment) az előfizetőnél lévő terminál; a <strong>demarkációs vonal</strong> a szolgáltató és az előfizető hálózata közti határ.</li>
+     <li><strong>Access:</strong> az edge-forgalom koncentrálása a core felé; az <em>access router</em> az első szolgáltatói router. Hozzáférés-típusok: dial-up, DSL (DSLAM), kábel (headend), FTTx/PON (üvegszál), enterprise/campus Ethernet, mobil (2G–5G).</li>
+     <li><strong>Core:</strong> az internet gerince — AS-en belül nagy sebességű, „buta” routerek sűrű mesh-ben; AS-ek között „okos” routerek a forgalom kicserélésére. Egy ISP hálózata egy vagy több <strong>POP</strong>-ból (Point of Presence) áll.</li>
+    </ul>`},
+   {id:"t-tranzitszolg", title:"A tranzitszolgáltatás", short:"„Cső a falban” — fizetett globális hozzáférés.",
+    body:`<p>Két AS összekapcsolásának legegyszerűbb módja a tranzit. Az egyik a <strong>szolgáltató (provider)</strong>, a másik az <strong>előfizető (customer)</strong>. A szolgáltató szerződésben vállalja, hogy (a) az előfizető forgalmát eljuttatja az internet bármely hosztjához, és (b) az internetről az előfizetőnek érkező összes forgalmat kézbesíti. Cserébe az előfizető <em>forgalomfüggő díjat</em> fizet.</p>
+    <p>Találó hasonlat (DrPeering): a tranzit olyan, mint egy „cső a falban”, amin az áll, hogy „erre van az internet” — az előfizető bedugja a hálózatát, a többit a szolgáltató intézi.</p>
+    <p><strong>Címzés:</strong> a szolgáltató ad(hat) az előfizetőnek IP-címtartományt; majd a saját feladata, hogy az előfizető prefixére vonatkozó BGP-hirdetést terjessze az interneten, a kívülről jövő hirdetéseket átadja az előfizetőnek, és folyamatosan továbbítsa az „előfizető↔internet” forgalmat. A jelölésben a nyíl az előfizetőtől a szolgáltató felé mutat, a cash-flow ($) irányában.</p>`},
+   {id:"t-singlehomed", title:"Single-homed AS és default gateway", short:"Egyetlen szolgáltató; alapértelmezett útvonal felfelé.",
+    body:`<p>A <strong>single-homed (SH) AS</strong> egyetlen szolgáltató tranzitján keresztül kapcsolódik az internetre. Ez a legegyszerűbb felállás, és jó példa a címzés/routing működésére:</p>
+    <ul>
+     <li><strong>Címzés:</strong> a SH AS tipikusan a szolgáltató címtartományának egy alhálózati prefixét kapja. Így a szolgáltatónak <em>nem kell külön hirdetnie</em> az előfizető prefixét — az része a saját, aggregált címtartományának. (A szolgáltató a saját FIB-jében egy <em>specifikusabb</em> bejegyzéssel irányítja az előfizető felé a befelé jövő forgalmat.)</li>
+     <li><strong>Routing:</strong> a SH AS-nek elég egy <strong>default gateway</strong> (0.0.0.0/0) a szolgáltató felé — ehhez <em>routing protokoll sem kell</em>, hiszen minden más bejegyzés specifikusabb a default-nál, ami felfelé visz mindent.</li>
+    </ul>
+    <p><strong>Értékelés.</strong> Előny: minimális konfiguráció, és nem keletkezik új FIB-bejegyzés az internet többi részén. Hátrány: rossz hibatűrés (ha az access-link kiesik, nincs internet), és esetleg drága. Hibatűrőbb változat: az előfizető a szolgáltató több access-routeréhez kapcsolódik (hiba esetén átvált) — de ez már bonyolultabb konfigurációt igényel az előfizetőnél.</p>`},
+   {id:"t-multihomed", title:"Multi-homed AS, PA vs. PI címzés", short:"Több szolgáltató a redundanciáért; kétféle címzés.",
+    body:`<p>A SH AS internetkapcsolata megszűnik, ha a szolgáltatója elérhetetlen. A <strong>multi-homed (MH) AS</strong> ezért <em>több</em> szolgáltatón keresztül kapcsolódik. (A jelölésben az előfizetőtől nyíl mutat az összes szolgáltató felé, a cash-flow irányában.) A címzésnek két módja van — ezt szeretik szembeállíttatni:</p>
+    <ul>
+     <li><strong>PA (Provider Aggregatable):</strong> az MH AS az <em>egyik</em> szolgáltató prefixéből kap címet. A másik szolgáltatónál ez <em>nem aggregálható</em>, ezért azt külön ki kell hirdetni → <strong>plusz FIB-bejegyzés az egész interneten</strong>.</li>
+     <li><strong>PI (Provider Independent):</strong> az előfizető címtartománya egyik szolgáltatóé sem; mindkét szolgáltató <em>külön</em> hirdeti → szintén plusz FIB-bejegyzés.</li>
+    </ul>
+    <p>Összevetés: PA esetén az előfizető a szolgáltatóhoz van kötve (minden belső interfész onnan kap címet), ezért a <em>szolgáltatóváltás drága</em> (teljes renumbering, minden eszközt újra kell konfigurálni). PI-nél a váltás egyszerűbb — ezért sok SH AS is szeretne PI-prefixet, de ritkán kap, mert a plusz FIB-bejegyzés az internet többi részén „túl drága”.</p>
+    <p><strong>Értékelés.</strong> MH előnyei: nagyobb rendelkezésre állás, terhelésmegosztás, jobb ártárgyalási pozíció. Hátrányai: bonyolultabb konfiguráció (dinamikus routing a határroutereken), és az MH-prefix minden internet-router FIB-jében megjelenik → rosszul skálázódik.</p>`},
+   {id:"t-hurok", title:"Tranzit-hurkok elkerülése", short:"A default gateway veszélyei és kezelésük.",
+    body:`<p>Az SH AS-eknek elvileg nem kéne routing protokollt futtatniuk, mégis gyakran teszik — a fő ok a <strong>forgalomtovábbítási hurkok</strong> elkerülése, amelyeket a default gateway okozhat egy több szolgáltatóból álló hierarchiában.</p>
+    <p>Példa: AS1 szolgáltat AS2-nek (PI-prefixen), AS2 pedig AS3-nak (PA-prefixen), és AS2 default gateway-e AS1. Ha az AS2–AS3 link meghibásodik, és AS1-hez egy AS3-beli című csomag érkezik: AS1 továbbítja AS2-nek; AS2-nek viszont már nincs érvényes bejegyzése AS3 prefixére (a link halott), ezért a <em>default gateway-én</em> visszaküldi AS1-nek; AS1 megint AS2-nek… — <strong>hurok</strong>, amíg a TTL le nem jár (a csomag eldobódik).</p>
+    <p><strong>A legegyszerűbb megelőzés:</strong> ha egy AS tranzit-szolgáltatást nyújt másnak, akkor <em>ne tegyen default gateway-t a FIB-be</em>. Így ha nincs érvényes route, a csomag azonnal eldobódik (nem kerül hurokba) — cserébe minden IPv4-prefixet tárolnia kell a FIB-ben. Az ilyen, default gateway nélküli routerek összessége a <strong>Default Free Zone (DFZ)</strong> — lényegében az internet gerince, ahol minden routernek a teljes globális táblát ismernie kell.</p>`}
+  ]
+},
+{
+  id:"ch12", num:12, subject:SUBJECT,
+  title:"Az internet kormányzása",
+  intro:"Az internet szabályozott környezet — csak épp nincs egyetlen kormányzója. A definíció szerint közös elvek, normák és döntési mechanizmusok együttese, amelyet kormányok, üzleti és civil szereplők együtt alakítanak: ez a multistakeholder modell. A vizsgán a kormányzás feladatait, a kritikus erőforrások (CIR) szervezeti hierarchiáját (ICANN/IANA, RIR, LIR), a WHOIS-t, a tanúsítványrendszert és a bizalmi láncot, a TLS-t (Heartbleed), az NTP-t, a hálózatsemlegességet és a szabványügyi szervezeteket kell ismerni.",
+  topics:[
+   {id:"t-governance", title:"Mit jelent az internet kormányzása?", short:"Nincs egyetlen kormányzó — multistakeholder modell.",
+    body:`<p>Hivatalos definíció (WSIS/WGIG/IGF nyomán): közös <em>elvek, normák, szabályok, döntési mechanizmusok és tervezetek</em> kialakítása és alkalmazása az internet evolúciója és hatékony használata érdekében — a kormányzati, üzleti és civil szféra (szervezetek és magánszemélyek) együttműködésével.</p>
+    <p>A szemléletváltás tengelyei (régi → új): centralizált → elosztott; irányítás → evolúció; multilaterális → <strong>multi-stakeholder</strong>; szabályok → normák/szokások; technikai → koncepcionális kérdések; földrajzilag kötött → helyfüggetlen. A lényeg: <em>„internet-kormányzás” a szó szoros értelmében nem létezik — valójában senki nem irányít (és ne is irányítson), azaz mindenki irányít.</em> A fogalom inkább azt jelzi, hogy az internet <em>alakulását</em> tudjuk befolyásolni.</p>
+    <p>A kormányzás egy lehetséges feladatfelosztása (érdemes megjegyezni a 7 területet és a központosítottság mértékét): (1) útválasztás és összeköttetés-menedzsment (erősen elosztott); (2) kritikus erőforrások (CIR) kezelése (erősen központosított); (3) kiberbiztonság; (4) intellektuális tulajdonjogok internetes vonatkozásai; (5) információs közvetítők szabályozása (pl. GDPR, Facebook/Google); (6) policy-making, döntéshozatal (pl. net neutrality); (7) kutatások és szabványosítás.</p>`},
+   {id:"t-cir", title:"Kritikus erőforrások (CIR): ICANN, RIR, LIR", short:"Cím- és ASN-kiosztás hierarchiája.",
+    body:`<p>A <strong>Critical Internet Resources (CIR)</strong> a globális, virtuális erőforrások: IP-címek (IPv4/IPv6), a DNS névrendszer, az AS-számok (ASN) és a protokoll-portszámok. Ezek kiosztása erősen <em>központosított</em>, hierarchikus szervezetrendszerben:</p>
+    <ul>
+     <li><strong>ICANN</strong> (Internet Corporation for Assigned Names and Numbers) — a globálisan egyedi azonosítók koordinátora. A végrehajtó részlege az <strong>IANA</strong> (Internet Assigned Numbers Authority), amely az IPv4/IPv6-címeket, a DNS-t (új TLD-k, a 13 root-szerver-klaszter), az ASN-eket és a protokoll-számokat kezeli, és a címtartományokat a RIR-eknek osztja.</li>
+     <li><strong>RIR</strong> (Regional Internet Registry) — 5 nagy, regionális, non-profit szervezet (pl. Európában a RIPE NCC). Ezek tömörülnek a <strong>NRO</strong>-ba (Number Resource Organization), amely az ICANN-on belül az <strong>ASO</strong>-t (Address Supporting Organisation) alkotja a közös számosztási politikához.</li>
+     <li><strong>LIR</strong> (Local Internet Registry) — a hierarchia alja: a RIR-ektől kapnak címeket és továbbosztják. Ezek az ISP-k (for-profit) vagy intézmények, pl. a BME.</li>
+     <li><strong>NTIA</strong> — az USA Kereskedelmi Minisztériumához tartozó szerv, amely sokáig a DNS root zone felügyelője volt; ezt <strong>2016. október 1-jén</strong> adta át a multistakeholder közösségnek (az internet ekkor lett ténylegesen „független”).</li>
+    </ul>`},
+   {id:"t-whois", title:"WHOIS", short:"Az internet-erőforrások lekérdezhető adatbázisa.",
+    body:`<p>A <strong>WHOIS</strong> a 80-as évek eleje óta létező adatbázis-szolgáltatás és lekérdező protokoll az internetes virtuális erőforrások (kinek a tulajdona egy domain, IP-tartomány, ASN) lekérdezésére.</p>
+    <p>Fontos jellemzők a vizsgára: ahogy a DNS decentralizálttá vált, a WHOIS-adatbázisok is megszaporodtak — de ezek <em>nem</em> egy elosztott adatbázist alkotnak, hanem egymástól független, sokszor eltérő struktúrájú, az operátor által egyedileg frissített rendszerek (minden RIR és sok regisztrátor cég is üzemeltet egyet). Eredetileg teljesen <strong>szöveg alapú</strong> protokoll (gyakorlatilag egyszerű telnet). Régen bármilyen keresőszóra válaszolt (pl. „john” minden ilyen domaint visszaadott), ma adatvédelmi okból ez erősen korlátozott. A fejlettebb implementációk <em>iteratívan</em> is keresnek, ha az adott szerver hierarchikusan tárolja egy idegen domain WHOIS-szerverének címét.</p>`},
+   {id:"t-tanusitvany", title:"Digitális tanúsítványok és a bizalmi lánc", short:"CA-k, X.509, chain of trust.",
+    body:`<p>Számos internetes alkalmazás biztonságot követel. A célokat a <strong>CIAAN</strong> mozaikszó foglalja össze: <em>Confidentiality</em> (bizalmasság — titkosítva), <em>Integrity</em> (sértetlenség — senki nem nyúlt bele), <em>Authenticity</em> (hitelesség — bízunk a másik személyében), <em>Availability</em> (rendelkezésre állás), <em>Nonrepudiation</em> (letagadhatatlanság — pl. bíróságon).</p>
+    <p>Ezt nyilvános/privát kulcsú kriptográfiával és <strong>digitális tanúsítványokkal</strong> (formátum: <strong>X.509</strong>) érjük el. A tanúsítványt egy <strong>CA (Certificate Authority)</strong> adja ki: ha két fél közösen bízik a CA-ban, akkor egymásban is tud bízni rajta keresztül. A CA-k <strong>hierarchikusan</strong> épülnek fel:</p>
+    <ul>
+     <li><strong>Root</strong> tanúsítvány (önaláírt),</li>
+     <li><strong>Intermediate</strong> (a root által aláírt),</li>
+     <li><strong>Leaf</strong> (vég-tanúsítvány, pl. egy weboldalé),</li>
+     <li><strong>önaláírt</strong> (nem hitelesített).</li>
+    </ul>
+    <p>Az érvényességet mindig ellenőrizni kell: <strong>OCL</strong> (egyszerű, periodikusan frissülő lista — nem mindig aktuális), <strong>OCSP</strong> (Online Certificate Status Protocol — a kliens kérdezi le a CA-tól), vagy <strong>OCSP stapling</strong> (a webszerver csatolja a friss állapotot). A <strong>bizalmi lánc (chain of trust)</strong> lényege: a böngészőkbe gyárilag be van építve néhány nagy CA gyökér-publikus kulcsa (Microsoft/Apple/Mozilla/Oracle/Android root programok), és a böngésző <em>csak</em> ezekben bízik — egy tanúsítvány akkor érvényes, ha a lánca egy beépített root-ig visszavezethető.</p>`,
+    plain:`a tanúsítvány olyan, mint egy személyi igazolvány, amit egy közjegyző (CA) pecsétel le. Te nem ismered a weboldalt, de ha megbízol a közjegyzőben, akinek a pecsétjét eleve „belegyárazták” a böngésződbe, akkor elhiszed, hogy az oldal tényleg az, akinek mondja magát. A „lánc” azt jelenti: a kis közjegyzőt egy nagyobb hitelesíti, azt egy még nagyobb, egészen a böngésződbe épített fő-közjegyzőig.`},
+   {id:"t-tls", title:"TLS és a Heartbleed-bug", short:"A tanúsítványrendszert használó protokoll és egy híres hiba.",
+    body:`<p>A tanúsítványrendszert használó protokoll a <strong>TLS</strong> (Transport Layer Security), a korábbi SSL utódja (történetileg az SSL 3.1 = TLS 1.0). Ez biztosítja a titkosított, hitelesített kapcsolatot pl. a HTTPS és sok más szolgáltatás alatt.</p>
+    <p>A vizsgán emlegetett konkrét eset a <strong>Heartbleed-bug</strong> (2014 eleje): egy súlyos hibát tettek közzé az <strong>OpenSSL</strong> könyvtárban, amelyre számtalan TLS-implementáció épül. Mivel az OpenSSL ennyire elterjedt, egyetlen hibája a web óriási részét érintette — jó példa arra, milyen kockázatot jelent, hogy a biztonsági infrastruktúra néhány közös, széles körben használt komponensen nyugszik.</p>`},
+   {id:"t-weboftrust", title:"Web of trust", short:"A központi CA-k decentralizált alternatívája (PGP).",
+    body:`<p>A központosított, CA-alapú tanúsítványrendszer <strong>elosztott alternatívája</strong> a <strong>web of trust</strong>. Lényege: ha elég sok olyan ember (bizalmasom) bízik valakiben, akiben én is megbízom, akkor én is megbízom benne — nincs központi hitelesítő.</p>
+    <p>A rendszer szintén nyilvános/privát kulcsokra épül; tipikus megvalósítása a <strong>PGP</strong> web of trust (kb. 100 ezres nagyságrendű taggal). Ez a megközelítés jól illeszkedik az internet decentralizált filozófiájához, de gyakorlatban nehezebben skálázódik és kevésbé felhasználóbarát, mint a böngészőkbe épített CA-hierarchia — ezért a web nagy része a központi CA-modellt használja.</p>`},
+   {id:"t-ntp", title:"NTP — időszerverek", short:"Pontos idő stratum-szintekbe szervezve.",
+    body:`<p>A pontos idő több helyen kritikus (pl. a tanúsítványok érvényességi idejéhez). Erre szolgál az <strong>NTP</strong> (Network Time Protocol, jelenleg v4; egyszerűbb esetben SNTP), amely <strong>UDP</strong>-t használ, és <strong>UTC</strong> időt mér (nem TAI-t; a helyi időzónát a kliens kezeli).</p>
+    <p>A hálózat <strong>stratum-szintekbe</strong> szerveződik: a <em>stratum 1</em> szerverek a referencia-órákhoz közvetlenül kapcsolódnak (pl. ntp.atomki.mta.hu), a stratum 2 ezektől szinkronizál, és így tovább; a teljes NTP-hálózat világszerte több tízezer gépet tartalmaz. A sikeres szinkron egy szerverrel ~5 sikeres egyeztetést (≈5 perc) igényel; a pontosság néhány mikroszekundumtól pár száz milliszekundumig terjedhet. Az aktuális „era” (1 era = 136 év) 1900. január 1-jétől számolódik másodpercben.</p>
+    <p>Biztonsági vonatkozás: az NTP-t számos támadás célozza/használja (TLS, DNSSEC, S-BGP, Bitcoin időfüggő mechanizmusai), és kiváló eszköz <strong>DDoS-amplifikációhoz</strong> — akár ~500-szoros forgalomnövekedéssel.</p>`},
+   {id:"t-netneutrality", title:"Hálózatsemlegesség (Net Neutrality)", short:"Az ISP minden forgalmat egyenrangúan kezeljen?",
+    body:`<p>A hálózatsemlegesség lényege: az internet végfelhasználói számára <em>minden csomag egyforma</em> (érték-semleges) — ha egy adatfolyam nem igényel extra minőséget, ne legyen drágább/lassabb csak azért, mert mondjuk mozifilm és nem szöveg. A kérdés az <em>előfizetői huroknál</em> (az ISP és a végfelhasználó között) éleződik ki.</p>
+    <p>Miért nőtt a jelentősége? Politika (2005-től az USA-ban liberalizálódik az ISP-piac), gazdaság (egyre nagyobb verseny, CDN, peering), technológia (a <strong>DPI — Deep Packet Inspection</strong> lehetővé teszi, hogy az ISP a csomag <em>tartalmába</em> is belenézzen — pro: nemzetbiztonság, kontra: személyiségi jogok).</p>
+    <p>Az USA-beli idővonal (az <strong>FCC</strong> szabályozza): 2005 — a „négy internetes szabadságjog”; 2015 — Obama nyomására az ISP távközlési szolgáltatóvá minősül (Title II), így szabályozható; 2016 — nincs blokkolás/lassítás/priorizálás; 2017 (Ajit Pai) — a védelmek lebontása; <strong>2018. április 23. — a szabályok hivatalosan véget érnek</strong>; 2021-től Biden próbálja visszahozni. Az <strong>EU</strong> 2016-ban pár hónappal az USA után hozott semlegességet segítő döntéseket.</p>
+    <p>Híres viták: a <em>Comcast–Netflix</em> ügy (a „strong net neutrality” fogalma — az FCC szerint a semlegesség a <em>hozzáférésre</em> vonatkozik, a tranzitra nem; végül a Netflix fizetett a Comcastnak); itthon a <em>2015-ös UPC–RTL</em> eset.</p>`,
+    plain:`a hálózatsemlegesség azt mondja, hogy az internetszolgáltató olyan, mint a postás: minden csomagot egyformán kell vinnie, nem nézheti meg, mi van benne, és nem kérhet többet a „menőbb” küldeményért, nem is lassíthatja le a konkurensét. A vita arról szól, hogy ez tisztességes verseny-e (igen, mert különben az ISP zsarolhat), vagy gátolja-e az innovációt (az ISP szerint hadd differenciáljon, abból fejleszt).`},
+   {id:"t-szabvany", title:"Szabványosító szervezetek", short:"IETF/RFC, IAB, ISOC, ISO.",
+    body:`<p>Az internetet sok szabványosító szervezet alakítja; a legfontosabbak:</p>
+    <ul>
+     <li><strong>IETF</strong> (Internet Engineering Task Force): nyílt, szakértői, önszerveződő csoportokban dolgozik; <strong>RFC</strong>-ket (Request for Comments) ad ki (a munkadokumentum az „Internet Draft”). Az RFC-k jogilag csak ajánlások, gyakorlatilag azonban szabványok. Felügyelő/irányító testületei az <strong>IAB</strong> (Internet Architecture Board) és az <strong>IESG</strong> (Internet Engineering Steering Group).</li>
+     <li><strong>ISOC</strong> (Internet Society): az IETF/IAB/IESG/IRTF ernyőszervezete; nemzetközi egyeztetés, oktatás, konferenciák.</li>
+     <li><strong>W3C</strong> (World Wide Web Consortium): a web-szabványok (alapító: Tim Berners-Lee, MIT).</li>
+     <li><strong>Nemzeti/regionális:</strong> ANSI (USA), ETSI (Európa); <strong>ISO</strong>: nemzetközi szabványosítás.</li>
+    </ul>
+    <p>Fontosabb <strong>hazai</strong> szervezetek (vizsgán is előfordulhatnak): <strong>NISZ</strong> (kormányzati infrastruktúra), <strong>KIFÜ</strong> (kutatóhálózat, a korábbi NIIF), <strong>NMHH</strong> (média- és hírközlési hatóság, állami internet-szabályozás), <strong>IVSZ</strong>, <strong>ISZT</strong> (Internet Szolgáltatók Tanácsa — a BIX-et üzemelteti és a .hu domainért felel), <strong>HTE</strong>, valamint a Magyar IPv6 Fórum.</p>`}
+  ]
+},
+{
+  id:"ch13", num:13, subject:SUBJECT,
+  title:"Tranzit-árazás, peering és az AS-szintű struktúra",
+  intro:"A záró fejezet a tranzit üzleti oldalát és az internet nagyléptékű szerkezetét rakja össze. Megnézzük, hogyan mérik és árazzák a tranzitot (95th percentile), mi a peer kapcsolat és a peering policy, mire valók az IXP-k, mi a különbség stub és tranzit AS között, és hogyan épül fel a Tier-hierarchia. A vizsgán a 95/5-ös számolás, a tranzit↔peer döntés (peering wars), az IXP szerepe és a Tier 1 fogalma (nincs upstream, egymással full peer-mesh) a kulcs.",
+  topics:[
+   {id:"t-arazas", title:"Tranzit-árazás: 95th percentile", short:"A 95/5-ös számlázási módszer.",
+    body:`<p>Egy AS „mérete” (jelentősége) arányos a <strong>customer cone</strong>-jával: hány AS vesz tőle tranzitot, illetve — még jobb metrikaként — mekkora az általa meghirdetett <em>címtartomány</em> (hány IP-cím), hiszen minden előfizetője prefixét meg kell hirdetnie.</p>
+    <p>A tranzit minőségét az <strong>SLA</strong> (Service Level Agreement) rögzíti: rendelkezésre állás (pl. 99,99%), sebesség, csomagvesztés, késleltetés, és a mérés módja. Az árazás <strong>sávosan</strong>, a linken áthaladó forgalom sávszélessége után történik, a <strong>commit rate</strong> (várható havi sebesség) alapján — nagyobb commit → kisebb egységár, de van minimum havidíj. Pl. 10&nbsp;Mbps → 12&nbsp;$/Mbps (min. 120&nbsp;$); 100&nbsp;Gbps → 0,7&nbsp;$/Mbps.</p>
+    <p>A forgalom mérése a <strong>95th percentile (95/5)</strong> módszerrel: 5 percenként sávszélesség-mérés; hónap végén növekvő sorba rendezés; a mérési hibák (túlcsordulás, reboot) eldobása; majd a <strong>95. percentilis</strong> = a legkisebb érték, amely már ≥ a minták 95%-a. Más szóval: az idő 95%-ában a forgalom ez alatt volt — a ritka burst-öket (a felső 5%-ot) levágja, így nem büntet a kivételes csúcsokért.</p>`,
+    plain:`a szolgáltató 5 percenként lefényképezi, mennyit forgalmazol. Hónap végén sorba rakja a fotókat a legkisebbtől, és levágja a legforgalmasabb 5%-ot (a ritka „csúcsnapjaidat”). Ami marad a tetején, az után fizetsz. Példa: a [1,…,1,15,16,16,17,21,40] sorozatnál a 95. érték 15&nbsp;Mbps → 10&nbsp;Mbps commiton 12&nbsp;$×15 = 180&nbsp;$; de 100&nbsp;Mbps commiton akkor is fizeted a minimumot (500&nbsp;$).`},
+   {id:"t-peer", title:"A peer kapcsolat", short:"Kétoldalú, ingyenes forgalomcsere.",
+    body:`<p>Tegyük fel, hogy AS1 és AS2 mindketten AS3 előfizetői, és nagyjából azonos méretűek. Ha jelentős a köztük lévő forgalom, olcsóbb, ha azt <em>egymás közt, ingyen</em> cserélik ki — AS3 (és a tranzitdíj) kihagyásával. Ez a <strong>peer kapcsolat</strong>.</p>
+    <p>Definíció: <strong>bilaterális egyezség</strong> két AS között, hogy egymás <em>és egymás tranzit-előfizetői</em> között térítés nélkül továbbítják a forgalmat (DrPeering: „kölcsönösen hozzáférést adnak egymás előfizetőihez”). A jelölésben a peer-élnek <em>nincs nyílhegye</em>, mert nincs cash-flow.</p>
+    <p>Fontos korlát (a valley-free-ből): a peering NEM tranzit — a peer-kapcsolaton keresztül nem adunk ingyen globális elérést. Tehát csak a két peer és előfizetőik közti forgalom mehet rajta, a „peeren át egy harmadik szolgáltatóhoz” típusú út tiltott.</p>`},
+   {id:"t-peeringpolicy", title:"Peering policy és peering wars", short:"Open vs. selective; a peer-vs-tranzit döntés.",
+    body:`<p>A peer kapcsolat kvázi ingyen van (bár a link fenntartása sok pénzbe kerülhet), mégsem létesít minden AS mindenkivel peert. Egy nagy AS tipikusan <em>nem</em> peerel egy kicsivel — mert azzal ingyen hozzáférést adna a saját előfizetőihez, holott tranzitot is eladhatna neki pénzért. Egy ennyire kompetitív piacon a profitveszteség megengedhetetlen.</p>
+    <p>Ezért minden AS <strong>peering policy</strong>-t szab meg:</p>
+    <ul>
+     <li><strong>Selective peering</strong> (szigorú): a partnertől elvárt pl. hasonló méretű customer cone, szimmetrikus forgalmi igény, jelenlét több, földrajzilag eltérő POP-on, 24×7 support.</li>
+     <li><strong>Open peering:</strong> bárkivel hajlandó peerelni.</li>
+    </ul>
+    <p>A nyilvántartásra a <strong>PeeringDB</strong> szolgál. A „peerelni vagy tranzitot eladni?” döntés sok konfliktus forrása (<strong>peering wars</strong>): a peer csökkenti a tranzitdíjat és a késleltetést (közvetlen csere), de profitveszteséget és versenyhátrányt is okozhat (a másik hozzáfér az előfizetőinkhez). Ezért időnként <strong>depeering</strong> is történik (a peer-kapcsolat felmondása), akár Tier 1-ek között is.</p>`},
+   {id:"t-ixp", title:"IXP — Internet Exchange Point", short:"Közös pont, ahol tömegesen létesülnek peer-kapcsolatok.",
+    body:`<p>A peer-kapcsolatok nagy része egy <strong>IXP</strong>-ben (Internet eXchange Point) jön létre. Ez egy speciális infrastruktúra — tipikusan egy épület hűtött szerverterme —, amelynek célja, hogy az AS-ek <em>tömegesen</em> létesítsenek peer-kapcsolatot. Az ISP-k itt POP-okat hoznak létre, és az IXP biztosítja, hogy bármelyik POP bármelyik másikkal összekapcsolódhasson (közös Ethernet-interconnect). Ha egy ISP már jelen van egy IXP-n, onnan <em>nagyon olcsó</em> új peer-kapcsolatot építeni.</p>
+    <p>Az IXP lehet <strong>for-profit (jellemzően USA)</strong> vagy <strong>non-profit (jellemzően Európa)</strong>; célja minél egyszerűbb kapcsolódási pontot nyújtani és minél több ISP-t vonzani, a kicserélt forgalom után díjat szedve. Egy nagy IXP több száz AS-t szolgálhat ki, és akkora forgalmat vihet, mint a legnagyobb ISP-k. Példák: <strong>DE-CIX</strong> (Frankfurt — 600+ ISP, több Tbps), <strong>AMS-IX</strong> (Amszterdam), <strong>LINX</strong> (London), <strong>Equinix</strong>, és itthon a <strong>BIX</strong> (Budapest Internet eXchange). Kis országokban az IXP egyben a nemzeti kontroll (cenzúra vagy védelem) kitűnő pontja is.</p>`},
+   {id:"t-stubtranzit", title:"Stub vs. tranzit AS-ek", short:"Aki nem ad tranzitot másnak vs. aki igen.",
+    body:`<p>Egyszerű, de fontos megkülönböztetés:</p>
+    <ul>
+     <li><strong>Stub AS:</strong> olyan AS, amely <em>nem</em> nyújt tranzit-szolgáltatást más AS-nek (csak a saját forgalmát küldi/fogadja). Lehet single- vagy multi-homed.</li>
+     <li><strong>Tranzit AS:</strong> értelemszerűen a „nem stub” — mások forgalmát is továbbítja.</li>
+    </ul>
+    <p>Nagyságrend: a ma aktív kb. <strong>50 ezer</strong> AS-nek becslések szerint nagyjából a <em>fele–harmada stub</em>. Hazai példa a tranzit AS-re: a <strong>HBONE</strong> (AS1955), a magyar akadémiai számítógép-hálózat (felsőoktatás, kutatás, könyvtárak, kormányzati szervek), amely a BME-t, ELTE-t, SZTAKI-t stb. köti össze és felfelé pl. a GÉANT-hoz, Teliához, Cogenthez kapcsolódik.</p>`},
+   {id:"t-tier", title:"A Tier-hierarchia", short:"Tier 1/2, regionális és nemzeti szolgáltatók.",
+    body:`<p>Mivel egy előfizetői AS maga is nyújthat tranzitot további AS-eknek, kialakul egy <strong>tranzit-hierarchia</strong>:</p>
+    <ul>
+     <li><strong>Tier 1:</strong> globális ISP, amelynek <em>nincs upstream szolgáltatója</em> (nem fizet senkinek tranzitért). A világ bármely két előfizetőjét össze tudja kötni, és a Tier 1-ek egymás közt <strong>full peer-mesh</strong>-t alkotnak (mind peerel mindenkivel). Kb. 15 ilyen van (pl. AT&T, NTT, Deutsche Telekom, Telia, Verizon, Tata, GTT, Orange, Telecom Italia, Zayo…).</li>
+     <li><strong>Tier 2:</strong> egy Tier 1 előfizetője (gyakran szintén globális hálózattal).</li>
+     <li><strong>Regionális szolgáltató:</strong> adott földrajzi régión belül szolgáltat (pl. Comcast az USA-ban).</li>
+     <li><strong>Nemzeti szolgáltató:</strong> egy ország piacán.</li>
+     <li><strong>A hierarchia alján:</strong> single- és multi-homed előfizetők, stub AS-ek.</li>
+    </ul>
+    <p>Két fontos záró megállapítás: (1) a Tier-felosztás csak <em>hozzávetőleges</em> — sok Tier 1 közvetlenül szolgáltat nemzeti ISP-knek, sőt stub AS-eknek is, és peer-kapcsolat nem csak azonos Tier-en lehet. (2) A tranzit–peer modell az AS-AS kapcsolatoknak csak kb. <strong>70%</strong>-át fedi le; a maradék paid peering, sibling (kölcsönös tranzit) vagy ismeretlen policy — és az AS-AS üzleti kapcsolatok <strong>titkosak</strong> (legfeljebb az IRR-ből vagy traceroute-ból következtethetők). Általános trend a <strong>flattening</strong>: az internet a szabályos tranzit-hierarchiából egyre inkább a peer full-mesh felé fejlődik. A pontos AS-szintű topológiát ezért <em>senki sem ismeri</em> — ezzel záródik a kör a tárgy nyitógondolatához.</p>`}
+  ]
+},
+];
+
+/* =====================================================================
+   RENDER + LOGIKA
+   ===================================================================== */
+const STORAGE_KEY = "internet_oko_progress_v1";
+const CHECK_SVG = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+// állapot betöltése (localStorage, try/catch — ha nem elérhető, memóriában fut)
+let state = {};
+function loadState(){
+  try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw) state = JSON.parse(raw)||{}; }
+  catch(e){ state = {}; }
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ /* némán fut tovább memóriából */ }
+}
+loadState();
+
+const content = document.getElementById('content');
+const nav = document.getElementById('nav');
+
+function esc(s){return s;}
+
+// fejezetek + leckék kirajzolása
+CHAPTERS.forEach(ch=>{
+  const sec = document.createElement('section');
+  sec.className = 'chapter';
+  sec.id = ch.id;
+
+  // checklist sorok
+  const items = ch.topics.map(tp=>`
+    <div class="titem" data-tid="${tp.id}">
+      <button class="check" data-tid="${tp.id}" role="checkbox" aria-label="Kész: ${tp.title}">${CHECK_SVG}</button>
+      <div class="tbody">
+        <button class="tlink" data-goto="${tp.id}">${tp.title}</button>
+        <div class="tshort">${tp.short}</div>
+      </div>
+      <button class="tgo" data-goto="${tp.id}" aria-label="Ugrás a leckéhez">→</button>
+    </div>`).join('');
+
+  // leckék
+  const lessons = ch.topics.map((tp,i)=>`
+    <article class="lesson" id="${tp.id}">
+      <h3><span class="lnum">${ch.num}.${i+1}</span> ${tp.title}</h3>
+      <p class="ldesc">${tp.short}</p>
+      ${tp.body}
+      ${tp.plain?`<div class="plain"><div class="ph">◆ Konyhanyelven</div>${tp.plain.split('\n\n').map(p=>`<p>${p}</p>`).join('')}</div>`:''}
+    </article>`).join('');
+
+  sec.innerHTML = `
+    <header class="ch-head">
+      <div class="ch-subject"><span class="dot"></span>${ch.subject}</div>
+      <h2 class="ch-title"><span class="cn">${ch.num}.</span>${ch.title}</h2>
+      <p class="ch-intro">${ch.intro}</p>
+      <div class="ch-meta">
+        <span data-chcount="${ch.id}">0 / ${ch.topics.length} kész</span>
+        <span class="cbar"><span data-chbar="${ch.id}"></span></span>
+      </div>
+    </header>
+    <div class="checklist">
+      <div class="clist-h">Témakörök — pipáld ki, amit megtanultál</div>
+      ${items}
+    </div>
+    <div class="lessons">${lessons}</div>
+  `;
+  content.appendChild(sec);
+
+  // sidebar nav elem
+  const a = document.createElement('a');
+  a.className='nav-item'; a.href='#'+ch.id; a.dataset.chid=ch.id;
+  a.innerHTML = `<span class="nt"><span class="nnum">${String(ch.num).padStart(2,'0')}</span><span class="ntxt">${ch.title}</span></span><span class="nbar"><span data-navbar="${ch.id}"></span></span>`;
+  nav.appendChild(a);
+});
+
+// totals
+const ALL_TOPICS = CHAPTERS.flatMap(c=>c.topics.map(t=>t.id));
+document.getElementById('ovAll').textContent = ALL_TOPICS.length;
+
+// pipálás állapot alkalmazása UI-ra
+function applyTopic(tid){
+  const on = !!state[tid];
+  document.querySelectorAll(`.titem[data-tid="${tid}"]`).forEach(el=>el.classList.toggle('done', on));
+}
+function refreshProgress(){
+  // összesített
+  const doneAll = ALL_TOPICS.filter(t=>state[t]).length;
+  document.getElementById('ovDone').textContent = doneAll;
+  const pctAll = ALL_TOPICS.length? Math.round(doneAll/ALL_TOPICS.length*100):0;
+  document.getElementById('ovBar').style.width = pctAll+'%';
+  const mp = document.getElementById('mProg'); if(mp) mp.textContent = pctAll+'%';
+  // fejezetenként
+  CHAPTERS.forEach(ch=>{
+    const d = ch.topics.filter(t=>state[t.id]).length;
+    const pct = Math.round(d/ch.topics.length*100);
+    const cnt = document.querySelector(`[data-chcount="${ch.id}"]`);
+    if(cnt) cnt.textContent = `${d} / ${ch.topics.length} kész`;
+    const cb = document.querySelector(`[data-chbar="${ch.id}"]`); if(cb) cb.style.width = pct+'%';
+    const nb = document.querySelector(`[data-navbar="${ch.id}"]`); if(nb) nb.style.width = pct+'%';
+  });
+}
+
+// kezdeti UI
+ALL_TOPICS.forEach(applyTopic);
+refreshProgress();
+
+// események: pipa + navigáció (delegálva)
+document.addEventListener('click', e=>{
+  const chk = e.target.closest('.check');
+  if(chk){
+    const tid = chk.dataset.tid;
+    state[tid] = !state[tid];
+    if(!state[tid]) delete state[tid];
+    saveState(); applyTopic(tid); refreshProgress();
+    return;
+  }
+  const go = e.target.closest('[data-goto]');
+  if(go){
+    const id = go.dataset.goto;
+    const el = document.getElementById(id);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      el.querySelector('h3')?.animate(
+        [{background:'var(--teal-soft)'},{background:'transparent'}],
+        {duration:1200, easing:'ease-out'}
+      );
+    }
+    // mobil: csukjuk be a menüt, ha onnan kattintottak
+    document.getElementById('sidebar').classList.remove('open');
+  }
+});
+
+// eszközgombok
+document.getElementById('checkAll').addEventListener('click',()=>{
+  ALL_TOPICS.forEach(t=>state[t]=true);
+  saveState(); ALL_TOPICS.forEach(applyTopic); refreshProgress();
+});
+document.getElementById('resetAll').addEventListener('click',()=>{
+  if(confirm('Biztosan törlöd az összes pipát?')){
+    state = {}; saveState(); ALL_TOPICS.forEach(applyTopic); refreshProgress();
+  }
+});
+
+// scroll-spy: aktív fejezet kiemelése a sidebarban
+const navItems = [...document.querySelectorAll('.nav-item')];
+const spy = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      navItems.forEach(n=>n.classList.toggle('active', n.dataset.chid===en.target.id));
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+CHAPTERS.forEach(ch=>spy.observe(document.getElementById(ch.id)));
+
+// vissza a tetejére
+const toTop = document.getElementById('toTop');
+window.addEventListener('scroll',()=>{ toTop.classList.toggle('show', window.scrollY>600); });
+toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+// mobil menü
+document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('sidebar').classList.add('open'));
+document.getElementById('closeBtn').addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open'));
+
+// ha a localStorage nem elérhető, jelezzük
+try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); }
+catch(e){ document.getElementById('saveHint').textContent='Megjegyzés: ebben a nézetben a pipák csak a mostani munkamenetben maradnak meg. Töltsd le a fájlt és nyisd meg a böngésződben a tartós mentéshez.'; }
+</script>
+</body>
+</html>
