@@ -143,6 +143,10 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .result{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
 .grade{font-family:var(--serif);font-size:64px;line-height:1;font-weight:700;color:var(--accent);min-width:1ch}
 .submit-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.csum{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0;color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.csum b{color:var(--ink)}
+.csum i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.csum .k{background:var(--ok)} .csum .l{background:var(--warn)} .csum .u{background:var(--line)}
 .inline input[type=number]{width:4.5em;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-variant-numeric:tabular-nums}
 .timer{position:sticky;top:8px;z-index:5;display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px;box-shadow:var(--shadow)}
 .timer .t-time{font-family:var(--mono);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
@@ -208,9 +212,13 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
         <div class="seg" id="cardDir" aria-label="Irány">
           <button data-v="la">Latin → magyar</button><button data-v="hu">Magyar → latin</button><button data-v="mix">Vegyes</button>
         </div>
+        <div class="seg" id="cardFilter" aria-label="Melyik kártyák">
+          <button data-v="all">Minden kártya</button><button data-v="weak">Csak amit még nem tudok</button>
+        </div>
         <span class="spacer"></span>
         <button class="btn" id="cardRestart">Újrakeverés</button>
       </div>
+      <p class="csum" id="cardSummary"></p>
       <div class="prog"><span id="cardProgText"></span><div class="bar"><i id="cardBar"></i></div><span id="cardAgain"></span></div>
       <div id="cardArea">
         <div class="stage">
@@ -308,18 +316,30 @@ function record(w,ok){
   const s=stats[w.key]||(stats[w.key]={ok:0,bad:0});
   ok?s.ok++:s.bad++; s.last=ok?1:0; saveStats();
 }
+/* kártyák: tudtam / még nem számláló; egy szót akkor tudsz, ha legutóbb kétszer egymás után "tudtam" volt */
+const LS_CARDS="orvlat-12-cards", KNOWN_STREAK=2;
+let cstats={};
+try{ cstats=JSON.parse(localStorage.getItem(LS_CARDS)||"{}")||{}; }catch(e){ cstats={}; }
+function saveCards(){ try{ localStorage.setItem(LS_CARDS,JSON.stringify(cstats)); }catch(e){} }
+function recordCard(w,ok){
+  const c=cstats[w.key]||(cstats[w.key]={yes:0,no:0,streak:0});
+  if(ok){ c.yes++; c.streak++; } else { c.no++; c.streak=0; }
+  saveCards();
+}
+function cardLevel(w){ const c=cstats[w.key]; return !c?"new":c.streak>=KNOWN_STREAK?"known":"learning"; }
 function unrecordBad(w){ const s=stats[w.key]; if(!s)return; if(s.bad>0)s.bad--; s.ok++; s.last=1; saveStats(); }
 
 let state={
   mode: pref.mode||"cards",
   chapter: pref.chapter||"d1",
   cardDir: pref.cardDir||"la",
+  cardFilter: pref.cardFilter||"all",
   testDir: pref.testDir||"la",
   testCount: pref.testCount||"20",
   testFull: !!pref.testFull,
   testTime: pref.testTime||"0",
 };
-function persist(){ pref={mode:state.mode,chapter:state.chapter,cardDir:state.cardDir,testDir:state.testDir,testCount:state.testCount,testFull:state.testFull,testTime:state.testTime}; savePref(); }
+function persist(){ pref={mode:state.mode,chapter:state.chapter,cardDir:state.cardDir,cardFilter:state.cardFilter,testDir:state.testDir,testCount:state.testCount,testFull:state.testFull,testTime:state.testTime}; savePref(); }
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -398,11 +418,28 @@ function segInit(id,key,onChange){
 /* ---------- flashcards ---------- */
 let cs={queue:[],total:0,done:0,firstOk:0,again:0,cur:null,flipped:false,missed:new Set()};
 function startCards(list){
-  const words=list||chapterWords();
+  const words=list||chapterWords().filter(w=>state.cardFilter!=="weak"||cardLevel(w)!=="known");
   cs={queue:shuffle(words).map(w=>({w,dir:state.cardDir==="mix"?(Math.random()<.5?"la":"hu"):state.cardDir,tries:0})),
       total:words.length,done:0,firstOk:0,again:0,cur:null,flipped:false,missed:new Set()};
   $("#cardArea").hidden=false; $("#cardDone").hidden=true;
+  updateCardSummary();
+  if(!words.length){
+    updateCardProg(); $("#cardArea").hidden=true;
+    const d=$("#cardDone"); d.hidden=false;
+    d.innerHTML=`<h3>Nincs több gyakorolnivaló</h3>
+      <p class="hint" style="margin:0">Ebben a fejezetben minden szónál legalább ${KNOWN_STREAK}× egymás után a „Tudtam” gombot nyomtad.</p>
+      <div class="toolbar"><button class="btn primary" id="cdAll">Minden kártya</button></div>`;
+    $("#cdAll").onclick=()=>$('#cardFilter [data-v="all"]').click();
+    return;
+  }
   nextCard();
+}
+function cardMark(w){ const c=cstats[w.key]; return c?`✓${c.yes} ✗${c.no}`:"új"; }
+function updateCardSummary(){
+  const n={known:0,learning:0,new:0};
+  chapterWords().forEach(w=>n[cardLevel(w)]++);
+  $("#cardSummary").innerHTML=`<span><i class="k"></i><b>${n.known}</b> tudom</span><span><i class="l"></i><b>${n.learning}</b> még tanulom</span><span><i class="u"></i><b>${n.new}</b> még nem láttam</span>`;
+  $('#cardFilter [data-v="weak"]').textContent=`Csak amit még nem tudok (${n.learning+n.new})`;
 }
 function nextCard(){
   cs.cur=cs.queue.shift()||null; cs.flipped=false;
@@ -412,13 +449,13 @@ function nextCard(){
   const note=w.note?`<div class="note">${esc(w.note)}</div>`:"";
   const same=w.same.length?`<div class="syn">Ugyanez a jelentése: ${w.same.map(dictForm).join("; ")}</div>`:"";
   if(dir==="la"){
-    $("#cardFront").innerHTML=`<div class="tag"><span>latin → magyar</span><span>${huLabel(w)}</span></div>
+    $("#cardFront").innerHTML=`<div class="tag"><span>latin → magyar</span><span>${huLabel(w)} · ${cardMark(w)}</span></div>
       <div class="main"><div class="big-la">${esc(w.la)}</div><div class="hint">Mit jelent? Mi a genitivusa és a neme?</div></div><div class="tap">Koppints a megfordításhoz</div>`;
     $("#cardBack").innerHTML=`<div class="tag"><span>jelentés</span><span>${huLabel(w)}</span></div>
       <div class="main"><div class="dict">${dictForm(w)}</div><div class="big-hu">${esc(w.hu)}</div>${note}</div>`;
   } else {
     const dupHint=w.same.length?`<div class="hint">Több helyes latin szó is van rá.</div>`:"";
-    $("#cardFront").innerHTML=`<div class="tag"><span>magyar → latin</span><span>${huLabel(w)}</span></div>
+    $("#cardFront").innerHTML=`<div class="tag"><span>magyar → latin</span><span>${huLabel(w)} · ${cardMark(w)}</span></div>
       <div class="main"><div class="big-hu">${esc(w.hu)}</div>${dupHint}</div><div class="tap">Koppints a megfordításhoz</div>`;
     $("#cardBack").innerHTML=`<div class="tag"><span>szótári alak</span><span>${huLabel(w)} · ${G_NAME[w.g]}</span></div>
       <div class="main"><div class="big-la">${esc(w.la)}</div><div class="dict">${dictForm(w)}</div>${note}${same}</div>`;
@@ -433,10 +470,10 @@ function flip(){
 }
 function answerCard(ok){
   if(!cs.cur||!cs.flipped) return;
-  record(cs.cur.w,ok);
+  record(cs.cur.w,ok); recordCard(cs.cur.w,ok);
   if(ok){ cs.done++; if(cs.cur.tries===0) cs.firstOk++; }
   else { cs.cur.tries++; cs.again++; cs.missed.add(cs.cur.w); cs.queue.splice(Math.min(cs.queue.length,4),0,cs.cur); }
-  renderChapters(); nextCard();
+  renderChapters(); updateCardSummary(); nextCard();
 }
 function updateCardProg(){
   $("#cardProgText").textContent=`${cs.done} / ${cs.total}`;
@@ -687,14 +724,15 @@ $("#search").addEventListener("input",renderList);
 let resetArmed=false;
 $("#resetStats").addEventListener("click",e=>{
   if(!resetArmed){ resetArmed=true; e.target.textContent="Biztosan? Kattints újra"; setTimeout(()=>{resetArmed=false;e.target.textContent="Eredmények törlése";},4000); return; }
-  stats={}; saveStats(); resetArmed=false; e.target.textContent="Törölve";
+  stats={}; saveStats(); cstats={}; saveCards(); resetArmed=false; e.target.textContent="Törölve";
   if(state.chapter==="hard") state.chapter="all";
-  renderChapters(); if(state.mode==="list") renderList();
+  renderChapters(); if(state.mode==="list") renderList(); else if(state.mode==="cards") startCards();
 });
 
 /* ---------- init ---------- */
 $("#totalCount").textContent=WORDS.length;
 segInit("#cardDir","cardDir",()=>startCards());
+segInit("#cardFilter","cardFilter",()=>startCards());
 segInit("#testDir","testDir",()=>newTest());
 renderChapters();
 setMode(state.mode);
