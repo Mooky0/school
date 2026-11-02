@@ -51,6 +51,17 @@ h1{font-family:var(--serif);font-weight:700;font-size:clamp(28px,5vw,40px);line-
 .modes button{border:0;background:none;padding:8px 14px;border-radius:7px;font-weight:700;color:var(--muted)}
 .modes button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 
+/* szószedetek */
+.sets{align-self:flex-start}
+.sets button{padding:8px 16px;font-size:17px}
+.sets .n{font-family:var(--mono);font-size:12px;opacity:.75;margin-left:4px}
+.sets button[aria-pressed="true"]::before{content:"✓ "}
+.setsrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.big-la.expr{font-size:clamp(28px,5.5vw,44px)}
+.inputs input.gap{flex:1;min-width:5.5em;font-family:var(--serif);font-style:italic}
+.gloss{display:flex;flex-direction:column;gap:2px;font-size:15px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.gloss .la{color:var(--ink)} .gloss .gh{color:var(--ink)}
+
 /* chapters */
 .chapters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;display:inline-flex;gap:8px;align-items:baseline;font-weight:500}
@@ -131,6 +142,7 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .inputs input.w{flex:1}
 .inputs input.gen{width:7.5em;font-family:var(--mono);font-size:15px}
 .inputs select{width:4.2em}
+.inputs input.gen.wide{width:11em}
 .row .fb{grid-column:2/-1;font-size:15px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
 .row.ok{background:var(--ok-soft)} .row.bad{background:var(--bad-soft)}
 .row.ok .num::after{content:" ✓";color:var(--ok)} .row.bad .num::after{content:" ✗";color:var(--bad)}
@@ -187,8 +199,8 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
   <header class="top">
     <div>
       <div class="eyebrow">Orvosi latin</div>
-      <h1>Főnevek declinatiók szerint</h1>
-      <p class="sub">1–2. szószedet · <span id="totalCount"></span> szó szótári alakkal</p>
+      <h1 id="setTitle">Főnevek declinatiók szerint</h1>
+      <p class="sub"><span id="setSub">1–2. szószedet</span> · <span id="totalCount"></span> <span id="totalWhat">szó szótári alakkal</span></p>
     </div>
     <nav class="modes" role="tablist" aria-label="Tanulási mód">
       <button role="tab" id="tab-cards" data-mode="cards">Kártyák</button>
@@ -196,6 +208,8 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
       <button role="tab" id="tab-list" data-mode="list">Szójegyzék</button>
     </nav>
   </header>
+
+  <div class="setsrow"><nav class="seg sets" id="sets" aria-label="Szószedet"></nav><span class="hint">Több is bejelölhető – így együtt gyakorolhatod őket.</span></div>
 
   <div class="chapters" id="chapters" aria-label="Fejezet"></div>
 
@@ -244,12 +258,12 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
     <div style="display:flex;flex-direction:column;gap:14px">
       <div class="toolbar">
         <div class="seg" id="testDir" aria-label="Irány">
-          <button data-v="la">Latin → magyar</button><button data-v="hu">Magyar → latin</button>
+          <button data-v="la">Latin → magyar</button><button data-v="hu">Magyar → latin</button><button data-v="fill" id="dirFill">Kiegészítés</button><button data-v="mix">Vegyes</button>
         </div>
         <label class="inline" for="testCount">Szavak:
           <select id="testCount"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="0">mind</option></select>
         </label>
-        <label class="inline" id="fullWrap" for="testFull"><input type="checkbox" id="testFull"> teljes szótári alak (genitivus + nem)</label>
+        <label class="inline" id="fullWrap" for="testFull"><input type="checkbox" id="testFull"> teljes szótári alak (<span id="fullWhat">genitivus + nem</span>)</label>
         <label class="inline" for="testTime">Időkorlát: <input type="number" id="testTime" min="0" max="180" step="1" inputmode="numeric"> perc</label>
         <span class="spacer"></span>
         <button class="btn" id="testNew">Új dolgozat</button>
@@ -286,24 +300,114 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
 </div>
 
 <script src="words.js"></script>
+<script src="adjectives.js"></script>
+<script src="expressions.js"></script>
 <script>
 const SUBJECT = "Orvosi latin";
 const DECL_NAME = {1:"I.",2:"II.",3:"III.",4:"IV.",5:"V."};
 const G_NAME = {m:"hímnem",f:"nőnem",n:"semleges nem"};
-WORDS.forEach((w,i)=>{ w.id=i; w.key=w.la+"|"+w.gen; });
+const ADJ_NAME = {3:"3 végű",2:"2 végű",1:"1 végű"};
+/* két külön szószedet: words.js (főnevek) és adjectives.js (melléknevek) */
+const SETS = {
+  noun:{label:"Főnevek", title:"Főnevek declinatiók szerint", sub:"1–2. szószedet", def:"d1", all:"all", unit:"szó szótári alakkal", one:"szó"},
+  adj:{label:"Melléknevek", title:"Melléknevek szótári alak szerint", sub:"Melléknevek (46. oldal)", def:"a3", all:"aall", unit:"szó szótári alakkal", one:"szó"},
+  expr:{label:"Kifejezések", title:"Birtokos és mellékneves kifejezések", sub:"7. lecke (47. oldal) + gyakorló kifejezések", def:"e47", all:"eall", unit:"kifejezés", one:"kifejezés"},
+};
+const SET_ORDER=["noun","adj","expr"];
+WORDS.forEach(w=>{ w.pos="noun"; w.key=w.la+"|"+w.gen; w.sec="d"+w.d; });
+ADJECTIVES.forEach(w=>{ w.pos="adj"; w.gen=w.forms; w.key="adj|"+w.la; w.sec="a"+w.t; });
+const isN=w=>w.pos==="noun", isA=w=>w.pos==="adj", isE=w=>w.pos==="expr", isComp=w=>isA(w)&&w.t===2&&/or$/.test(w.la);
+
+/* kifejezések (expressions.js) */
+const KIND_NAME={a:"mellékneves kifejezés",g:"birtokos kifejezés",ag:"birtokos + mellékneves"};
+const SEC_TITLE={eag:"Birtokos + mellékneves kifejezések"};
+const SEC_ORDER=["d1","d2","d3","d4","d5","a3","a2","a1","ea","eg","eag"];
+const ENDINGS=["um","us","or","ae","is","a","e","i","er"];
+/* egy latin szóalakhoz megkeresi a szótári szót (főnév alanyeset / birtokos eset, melléknév bármely alakja) */
+function glossTok(t){
+  const n=WORDS.find(w=>w.la===t); if(n) return {w:n,nom:true};
+  let best=null;
+  for(const w of WORDS){
+    if(!w.gen.startsWith("-")){ if(t===w.gen) return {w}; continue; }
+    const pre=w.la.slice(0,Math.max(3,w.la.length-2));
+    if(t.startsWith(pre)&&t.endsWith(w.gen.slice(1))&&(!best||pre.length>best.p)) best={w,p:pre.length};
+  }
+  if(best) return {w:best.w};
+  const a=ADJECTIVES.find(w=>w.la===t); if(a) return {w:a};
+  for(const w of ADJECTIVES){
+    const st=w.t===1?w.la.replace(/(ns|ceps|es)$/,""):w.la.replace(/(us|er|is|or)$/,"");
+    if(st.length>=3&&t.startsWith(st)&&(!best||st.length>best.p)) best={w,p:st.length};
+  }
+  return best?{w:best.w}:null;
+}
+/* kiegészítős feladathoz: a fejszó utáni egyeztetett/birtokos szavak végződését jelöli ki */
+function autoGap(la){
+  return la.split(" ").map((t,i)=>{
+    if(i===0) return t;
+    const g=glossTok(t);
+    /* értelmezői főnév (pl. abductor, carotis) és 1 végű melléknév nem kap hézagot; a pelvis/manus típus igen, mert ott birtokos eset */
+    const sameGen=g&&g.nom&&(g.w.d===4||(g.w.gen==="-is"&&t.endsWith("is")));
+    if(g&&((g.nom&&!sameGen)||(isA(g.w)&&g.w.t===1))) return t;
+    const e=ENDINGS.find(e=>t.endsWith(e)&&t.length>e.length+1);
+    return e?t.slice(0,-e.length)+"["+e+"]":t;
+  }).join(" ");
+}
+function normHU(x){ return String(x).toLowerCase().normalize("NFC").trim().replace(/^(a|az)\s+/,"").replace(/[\s\-–.,;:!?()]/g,""); }
+function normLA(x){ return String(x).toLowerCase().normalize("NFC").replace(/æ/g,"ae").replace(/j/g,"i").replace(/[.,;:!?]/g," ").replace(/\s+/g," ").trim(); }
+EXPRESSIONS.forEach(w=>{
+  const src=w.la.includes("[")?w.la:autoGap(w.la);
+  w.la=w.la.replace(/[\[\]]/g,"");
+  w.gaps=[]; w.gapShow=src.replace(/(\S*?)\[([^\]]+)\]/g,(m,stem,end)=>{ w.gaps.push({stem,end}); return stem+"…"; });
+  w.pos="expr"; w.huAlts=w.hu; w.hu=w.huAlts[0]; w.huAll=w.huAlts.join(" · ");
+  w.key="expr|"+w.la; w.sec="e"+w.k;
+  w.huKeys=new Set(); w.huAlts.forEach(h=>[h,h.replace(/\([^)]*\)/g,"")].forEach(x=>w.huKeys.add(normHU(x))));
+  w.gloss=w.la.split(" ").map(t=>({t,g:glossTok(t)})).filter(x=>x.g);
+});
+const LEX=[...WORDS,...ADJECTIVES,...EXPRESSIONS];
+LEX.forEach((w,i)=>{ w.id=i; });
 
 const CHAPTERS = [
-  {id:"all", label:"Összes", title:"Összes szó", pattern:()=>"I–V. declinatio együtt", filter:()=>true},
-  {id:"d1", label:"I.", title:"I. declinatio", pattern:()=>'<span class="mono">-a, -ae</span> · nőnem', filter:w=>w.d===1},
-  {id:"d2", label:"II.", title:"II. declinatio", pattern:()=>'<span class="mono">-us, -i</span> hímnem · <span class="mono">-um / -on, -i</span> semleges', filter:w=>w.d===2},
-  {id:"d3", label:"III.", title:"III. declinatio", pattern:()=>'genitivus <span class="mono">-is</span> · mindhárom nem', filter:w=>w.d===3, group:true},
-  {id:"d3m", label:"m", title:"III. declinatio · hímnem", pattern:()=>'<span class="g g-m">m</span> pl. <span class="mono">-or, -oris</span>', filter:w=>w.d===3&&w.g==="m", sub:true},
-  {id:"d3f", label:"f", title:"III. declinatio · nőnem", pattern:()=>'<span class="g g-f">f</span> pl. <span class="mono">-io, -ionis</span>', filter:w=>w.d===3&&w.g==="f", sub:true},
-  {id:"d3n", label:"n", title:"III. declinatio · semleges nem", pattern:()=>'<span class="g g-n">n</span> pl. <span class="mono">-men, -minis</span>', filter:w=>w.d===3&&w.g==="n", sub:true},
-  {id:"d4", label:"IV.", title:"IV. declinatio", pattern:()=>'<span class="mono">-us, -us</span> hímnem · <span class="mono">-u, -us</span> semleges', filter:w=>w.d===4},
-  {id:"d5", label:"V.", title:"V. declinatio", pattern:()=>'<span class="mono">-es, -ei</span> · nőnem', filter:w=>w.d===5},
-  {id:"hard", label:"Hibázott", title:"Hibázott szavak", pattern:()=>"azok a szavak, amelyeket legutóbb nem tudtál", filter:w=>(stats[w.key]||{}).last===0},
+  {id:"all", set:"noun", label:"Összes", title:"Összes szó", pattern:()=>"I–V. declinatio együtt", filter:isN},
+  {id:"d1", set:"noun", label:"I.", title:"I. declinatio", pattern:()=>'<span class="mono">-a, -ae</span> · nőnem', filter:w=>isN(w)&&w.d===1},
+  {id:"d2", set:"noun", label:"II.", title:"II. declinatio", pattern:()=>'<span class="mono">-us, -i</span> hímnem · <span class="mono">-um / -on, -i</span> semleges', filter:w=>isN(w)&&w.d===2},
+  {id:"d3", set:"noun", label:"III.", title:"III. declinatio", pattern:()=>'genitivus <span class="mono">-is</span> · mindhárom nem', filter:w=>isN(w)&&w.d===3, group:true},
+  {id:"d3m", set:"noun", parent:"d3", label:"m", title:"III. declinatio · hímnem", pattern:()=>'<span class="g g-m">m</span> pl. <span class="mono">-or, -oris</span>', filter:w=>isN(w)&&w.d===3&&w.g==="m", sub:true},
+  {id:"d3f", set:"noun", parent:"d3", label:"f", title:"III. declinatio · nőnem", pattern:()=>'<span class="g g-f">f</span> pl. <span class="mono">-io, -ionis</span>', filter:w=>isN(w)&&w.d===3&&w.g==="f", sub:true},
+  {id:"d3n", set:"noun", parent:"d3", label:"n", title:"III. declinatio · semleges nem", pattern:()=>'<span class="g g-n">n</span> pl. <span class="mono">-men, -minis</span>', filter:w=>isN(w)&&w.d===3&&w.g==="n", sub:true},
+  {id:"d4", set:"noun", label:"IV.", title:"IV. declinatio", pattern:()=>'<span class="mono">-us, -us</span> hímnem · <span class="mono">-u, -us</span> semleges', filter:w=>isN(w)&&w.d===4},
+  {id:"d5", set:"noun", label:"V.", title:"V. declinatio", pattern:()=>'<span class="mono">-es, -ei</span> · nőnem', filter:w=>isN(w)&&w.d===5},
+  {id:"hard", set:"noun", hard:true, label:"Hibázott", title:"Hibázott szavak", pattern:()=>"azok a szavak, amelyeket legutóbb nem tudtál", filter:w=>isN(w)&&(stats[w.key]||{}).last===0},
+
+  {id:"aall", set:"adj", label:"Összes", title:"Összes melléknév", pattern:()=>"3, 2 és 1 végű melléknevek együtt", filter:isA},
+  {id:"a3", set:"adj", label:"3 végű", title:"3 végű melléknevek", pattern:()=>'<span class="mono">-us / -er, -a, -um</span> · I–II. declinatio szerint', filter:w=>isA(w)&&w.t===3},
+  {id:"a2", set:"adj", label:"2 végű", title:"2 végű melléknevek", pattern:()=>'<span class="mono">-is, -is, -e</span> és <span class="mono">-or, -or, -us</span> · III. declinatio szerint', filter:w=>isA(w)&&w.t===2, group:true},
+  {id:"a2is", set:"adj", parent:"a2", label:"-is", title:"2 végű melléknevek · -is, -is, -e", pattern:()=>'hím- és nőnem <span class="mono">-is</span> · semleges <span class="mono">-e</span>', filter:w=>isA(w)&&w.t===2&&!isComp(w), sub:true},
+  {id:"a2or", set:"adj", parent:"a2", label:"-or", title:"2 végű melléknevek · -or, -or, -us", pattern:()=>'hím- és nőnem <span class="mono">-or</span> · semleges <span class="mono">-us</span> · középfokú alakok', filter:isComp, sub:true},
+  {id:"a1", set:"adj", label:"1 végű", title:"1 végű melléknevek", pattern:()=>'<span class="mono">-ns (-ntis)</span>, <span class="mono">-ceps (-cipitis)</span> · III. declinatio szerint', filter:w=>isA(w)&&w.t===1},
+  {id:"ahard", set:"adj", hard:true, label:"Hibázott", title:"Hibázott melléknevek", pattern:()=>"azok a melléknevek, amelyeket legutóbb nem tudtál", filter:w=>isA(w)&&(stats[w.key]||{}).last===0},
+
+  {id:"eall", set:"expr", label:"Összes", title:"Összes kifejezés", pattern:()=>"mellékneves és birtokos szerkezetek együtt", filter:isE},
+  {id:"e47", set:"expr", label:"7. lecke", title:"7. lecke · 47. oldal", pattern:()=>"a 2. zh mintafeladatai: 1. kiegészítés · 2. latinra · 3. magyarra", filter:w=>isE(w)&&!!w.src},
+  {id:"ea", set:"expr", label:"Mellékneves", title:"Mellékneves kifejezések", pattern:()=>'főnév + egyeztetett melléknév, pl. <span class="mono">ligamentum latum</span>', filter:w=>isE(w)&&w.k.includes("a")},
+  {id:"eg", set:"expr", label:"Birtokos", title:"Birtokos kifejezések", pattern:()=>'főnév + birtokos esetű főnév, pl. <span class="mono">corpus vertebrae</span>', filter:w=>isE(w)&&w.k.includes("g")},
+  {id:"ehard", set:"expr", hard:true, label:"Hibázott", title:"Hibázott kifejezések", pattern:()=>"azok a kifejezések, amelyeket legutóbb nem tudtál", filter:w=>isE(w)&&(stats[w.key]||{}).last===0},
 ];
+/* több szószedet együtt */
+const MIX_CHAPTERS=[
+  {id:"mall", label:"Összes", get title(){ return curSet().title; }, pattern:()=>"a bejelölt anyagok együtt", filter:w=>inSets(w)},
+  {id:"mhard", hard:true, label:"Hibázott", title:"Hibázottak", pattern:()=>"amit legutóbb nem tudtál a bejelölt anyagokból", filter:w=>inSets(w)&&(stats[w.key]||{}).last===0},
+];
+function initSets(){
+  const x=Array.isArray(pref.sets)?pref.sets.filter(k=>SETS[k]):(SETS[pref.set]?[pref.set]:[]);
+  return x.length?x:["noun"];
+}
+const setKey=()=>SET_ORDER.filter(k=>state.sets.includes(k)).join("+");
+const inSets=w=>state.sets.includes(w.pos);
+function curSet(){
+  if(state.sets.length===1) return SETS[state.sets[0]];
+  return {title:SET_ORDER.filter(k=>state.sets.includes(k)).map(k=>SETS[k].label).join(" + "), sub:"Együtt gyakorolva", def:"mall", all:"mall", unit:"tétel", one:"tétel"};
+}
+const curChapters=()=>state.sets.length===1?CHAPTERS.filter(c=>c.set===state.sets[0]):MIX_CHAPTERS;
 
 /* ---------- storage ---------- */
 const LS_STATS="orvlat-12-stats", LS_PREF="orvlat-12-pref";
@@ -331,6 +435,8 @@ function unrecordBad(w){ const s=stats[w.key]; if(!s)return; if(s.bad>0)s.bad--;
 
 let state={
   mode: pref.mode||"cards",
+  sets: initSets(),
+  setCh: pref.setCh||{},
   chapter: pref.chapter||"d1",
   cardDir: pref.cardDir||"la",
   cardFilter: pref.cardFilter||"all",
@@ -339,16 +445,16 @@ let state={
   testFull: !!pref.testFull,
   testTime: pref.testTime||"0",
 };
-function persist(){ pref={mode:state.mode,chapter:state.chapter,cardDir:state.cardDir,cardFilter:state.cardFilter,testDir:state.testDir,testCount:state.testCount,testFull:state.testFull,testTime:state.testTime}; savePref(); }
+function persist(){ state.setCh[setKey()]=state.chapter; pref={mode:state.mode,sets:state.sets,setCh:state.setCh,chapter:state.chapter,cardDir:state.cardDir,cardFilter:state.cardFilter,testDir:state.testDir,testCount:state.testCount,testFull:state.testFull,testTime:state.testTime}; savePref(); }
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-const chap=id=>CHAPTERS.find(c=>c.id===id)||CHAPTERS[0];
-const chapterWords=()=>WORDS.filter(chap(state.chapter).filter);
+const chap=id=>curChapters().find(c=>c.id===id)||curChapters().find(c=>c.id===curSet().def);
+const chapterWords=()=>LEX.filter(chap(state.chapter).filter);
 const gTag=g=>`<span class="g g-${g}" title="${G_NAME[g]}">${g}</span>`;
-const dictForm=w=>`<span class="la">${esc(w.la)}</span>, <span class="mono">${esc(w.gen)}</span> ${gTag(w.g)}`;
+const dictForm=w=>isE(w)?`<span class="la">${esc(w.la)}</span>`:`<span class="la">${esc(w.la)}</span>, <span class="mono">${esc(w.gen)}</span>${isA(w)?"":" "+gTag(w.g)}`;
 const stripAcc=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
 function nhu(s){ return s.toLowerCase().normalize("NFC").replace(/\(ti\.\s*izom\)/g,"").replace(/[.!?;]+$/,"").replace(/\s+/g," ").trim(); }
 function alts(meaning){
@@ -358,10 +464,11 @@ function alts(meaning){
     x=x.trim(); if(!x)return;
     set.add(nhu(x.replace(/\([^)]*\)/g,""))); set.add(nhu(x.replace(/[()]/g,"")));
   }));
+  [...set].forEach(x=>{ if(/-$/.test(x)) set.add(x.replace(/-+$/,"").trim()); });
   set.delete(""); return [...set];
 }
-WORDS.forEach(w=>{ w.alts=alts(w.hu); w.hunorm=nhu(w.hu); });
-WORDS.forEach(w=>{ w.same=WORDS.filter(o=>o!==w && o.hunorm===w.hunorm); });
+LEX.forEach(w=>{ w.alts=alts(w.hu); w.hunorm=nhu(w.hu); });
+LEX.forEach(w=>{ w.same=LEX.filter(o=>o!==w && o.pos===w.pos && o.hunorm===w.hunorm); });
 function lev(a,b){
   if(Math.abs(a.length-b.length)>1) return 2;
   const d=[...Array(b.length+1).keys()];
@@ -369,19 +476,96 @@ function lev(a,b){
     for(let j=1;j<=b.length;j++){ const t=d[j]; d[j]=Math.min(d[j]+1,d[j-1]+1,prev+(a[i-1]===b[j-1]?0:1)); prev=t; } }
   return d[b.length];
 }
-function huLabel(w){ return `${DECL_NAME[w.d]} declinatio`; }
+function huLabel(w){ return isE(w)?KIND_NAME[w.k]+(w.src?" · 7. lecke":""):isA(w)?`${ADJ_NAME[w.t]} melléknév`:`${DECL_NAME[w.d]} declinatio`; }
+
+/* ---------- kifejezések: kártya, dolgozat ---------- */
+function exprCard(w,dir){
+  const gl=w.gloss.length?`<div class="gloss">${w.gloss.map(x=>`<span><span class="la">${esc(x.t)}</span>${x.t===x.g.w.la?" =":" ←"} ${dictForm(x.g.w)} · <span class="gh">${esc(x.g.w.hu)}</span></span>`).join("")}</div>`:"";
+  const more=w.huAlts.length>1?`<div class="syn">Így is jó: ${w.huAlts.slice(1).map(esc).join(" · ")}</div>`:"";
+  const tag=`${esc(huLabel(w))} · ${cardMark(w)}`;
+  if(dir==="la"){
+    $("#cardFront").innerHTML=`<div class="tag"><span>latin → magyar</span><span>${tag}</span></div>
+      <div class="main"><div class="big-la expr">${esc(w.la)}</div><div class="hint">Mit jelent magyarul?</div></div><div class="tap">Koppints a megfordításhoz</div>`;
+    $("#cardBack").innerHTML=`<div class="tag"><span>jelentés</span><span>${esc(huLabel(w))}</span></div>
+      <div class="main"><div class="big-hu">${esc(w.hu)}</div>${more}${gl}</div>`;
+  } else {
+    $("#cardFront").innerHTML=`<div class="tag"><span>magyar → latin</span><span>${tag}</span></div>
+      <div class="main"><div class="big-hu">${esc(w.hu)}</div><div class="hint">Hogy mondod latinul?</div></div><div class="tap">Koppints a megfordításhoz</div>`;
+    $("#cardBack").innerHTML=`<div class="tag"><span>latinul</span><span>${esc(huLabel(w))}</span></div>
+      <div class="main"><div class="big-la expr">${esc(w.la)}</div>${more}${gl}</div>`;
+  }
+}
+/* dolgozat iránya: a „Vegyes” a 47. oldal feladatainál az eredeti feladattípust adja */
+function pickDir(w){
+  const d=state.testDir, r=a=>a[Math.floor(Math.random()*a.length)];
+  if(isE(w)){
+    if(d==="mix") return w.src?{"1":"fill","2":"hu","3":"la"}[w.src]:r(w.gaps.length?["fill","la","hu"]:["la","hu"]);
+    if(d==="fill"&&!w.gaps.length) return r(["la","hu"]);
+    return d;
+  }
+  return d==="la"||d==="hu"?d:r(["la","hu"]);
+}
+function syncDirs(){
+  const hasE=state.sets.includes("expr");
+  $("#dirFill").hidden=!hasE;
+  if(!hasE&&state.testDir==="fill"){ state.testDir="mix"; persist(); }
+  $("#testDir").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===state.testDir));
+}
+function exprRow(it,i){
+  const w=it.w, A='autocomplete="off" autocapitalize="off" spellcheck="false"', lab=`<small>${esc(huLabel(w))}</small>`;
+  if(it.dir==="fill") return [`<span class="la">${esc(w.gapShow)}</span><small>Egészítsd ki a végződést!</small>`,
+    w.gaps.map((g,k)=>`<input class="gap" id="a${i}-x${k}" ${A} placeholder="${esc(g.stem)}…" aria-label="${esc(g.stem)}… végződése">`).join("")];
+  if(it.dir==="la") return [`<span class="la">${esc(w.la)}</span>${lab}`,`<input class="w" id="a${i}-w" ${A} placeholder="magyarul" aria-label="${esc(w.la)} magyarul">`];
+  return [`${esc(w.hu)}${lab}`,`<input class="w" id="a${i}-w" ${A} placeholder="latinul" aria-label="${esc(w.hu)} latinul">`];
+}
+function gradeExpr(it,i){
+  const w=it.w;
+  if(it.dir==="fill"){
+    /* elég a végződést beírni (pl. „is”), de a teljes szóalak is jó (pl. „gracilis”) */
+    const vals=w.gaps.map((g,k)=>normLA($(`#a${i}-x${k}`).value).replace(/^[-–…]+/,""));
+    const parts=w.gaps.map((g,k)=>!!vals[k]&&(vals[k]===g.end||vals[k]===g.stem+g.end));
+    return {ok:parts.every(Boolean),parts,why:vals.some(Boolean)?"":"üresen hagytad"};
+  }
+  const raw=$(`#a${i}-w`).value;
+  if(!raw.trim()) return {ok:false,why:"üresen hagytad"};
+  if(it.dir==="hu"){
+    const u=normLA(raw), t=w.la;
+    if(u===t) return {ok:true};
+    const ut=u.split(" "), tt=t.split(" ");
+    if(ut.length===tt.length){
+      if([...ut].sort().join()===[...tt].sort().join()) return {ok:false,why:"rossz a szórend"};
+      const bad=tt.filter((x,k)=>ut[k]!==x).length;
+      return {ok:false,why:bad===1?"egy szó hibás":`${bad} szó hibás`};
+    }
+    return {ok:false};
+  }
+  const u=normHU(raw), keys=[...w.huKeys];
+  if(w.huKeys.has(u)) return {ok:true};
+  if(keys.some(x=>stripAcc(x)===stripAcc(u))) return {ok:true,why:"figyelj az ékezetekre"};
+  if(u.length>=6&&keys.some(x=>lev(stripAcc(x),stripAcc(u))<=1)) return {ok:true,why:"kis elírás"};
+  return {ok:false};
+}
+function paintExprRow(it,i,ok){
+  const w=it.w, r=it.res, filled=x=>!!x.value.trim();
+  if(it.dir==="fill") w.gaps.forEach((g,k)=>{ const x=$(`#a${i}-x${k}`), good=!!r.parts[k]||it.override; x.classList.toggle("right",good); x.classList.toggle("wrong",!good&&filled(x)); });
+  else { const x=$(`#a${i}-w`); x.classList.toggle("right",ok); x.classList.toggle("wrong",!ok&&filled(x)); }
+  const fb=$("#fb"+i); fb.hidden=false;
+  const why=it.override?`<span class="why">elfogadtad</span>`:(r.why?`<span class="why">${esc(r.why)}</span>`:"");
+  const btn=(!r.ok&&!it.override)?`<button class="linkbtn" data-accept="${i}">Elfogadom, jó volt</button>`:"";
+  fb.innerHTML=`<span class="ans"><span class="la">${esc(w.la)}</span> · ${esc(w.huAll)}</span>${why}${btn}`;
+}
 
 /* ---------- chapters UI ---------- */
 function renderChapters(){
   const el=$("#chapters"); let html="";
   const chipHtml=c=>{
-    const n=WORDS.filter(c.filter).length;
-    const dis=(c.id==="hard"&&n===0)?" disabled":"";
+    const n=LEX.filter(c.filter).length;
+    const dis=(c.hard&&n===0)?" disabled":"";
     return `<button class="chip${c.group?" main":""}" data-ch="${c.id}" aria-pressed="${state.chapter===c.id}"${dis}>${esc(c.label)} <span class="n">${n}</span></button>`;
   };
-  CHAPTERS.forEach(c=>{
+  curChapters().forEach(c=>{
     if(c.sub) return;
-    if(c.group){ html+=`<span class="group">${chipHtml(c)}${CHAPTERS.filter(x=>x.sub).map(chipHtml).join("")}</span>`; }
+    if(c.group){ html+=`<span class="group">${chipHtml(c)}${curChapters().filter(x=>x.parent===c.id).map(chipHtml).join("")}</span>`; }
     else html+=chipHtml(c);
   });
   el.innerHTML=html;
@@ -389,6 +573,24 @@ function renderChapters(){
   $("#chTitle").textContent=c.title;
   $("#chPattern").innerHTML=c.pattern()+` · <span style="font-variant-numeric:tabular-nums">${chapterWords().length} szó</span>`;
 }
+function renderSets(){
+  $("#sets").innerHTML=SET_ORDER.map(k=>`<button data-set="${k}" aria-pressed="${state.sets.includes(k)}">${esc(SETS[k].label)}<span class="n">${LEX.filter(w=>w.pos===k).length}</span></button>`).join("");
+  const s=curSet();
+  $("#setTitle").textContent=s.title; $("#setSub").textContent=s.sub;
+  $("#totalCount").textContent=LEX.filter(inSets).length; $("#totalWhat").textContent=s.unit;
+  const n=state.sets.includes("noun"), a=state.sets.includes("adj");
+  $("#fullWhat").textContent=n&&a?"genitivus + nem, ill. végződések":a?"végződések":"genitivus + nem";
+}
+/* a gombok kapcsolók: több szószedet is bejelölhető, de legalább egy marad */
+$("#sets").addEventListener("click",e=>{
+  const b=e.target.closest("[data-set]"); if(!b) return;
+  const k=b.dataset.set;
+  state.setCh[setKey()]=state.chapter;
+  if(state.sets.includes(k)){ if(state.sets.length===1) return; state.sets=state.sets.filter(x=>x!==k); }
+  else state.sets=[...state.sets,k];
+  state.chapter=chap(state.setCh[setKey()]).id;
+  persist(); renderSets(); renderChapters(); syncDirs(); startMode();
+});
 $("#chapters").addEventListener("click",e=>{
   const b=e.target.closest("[data-ch]"); if(!b||b.disabled) return;
   state.chapter=b.dataset.ch; persist(); renderChapters(); startMode();
@@ -403,7 +605,7 @@ function setMode(m){
 }
 document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 function startMode(){
-  if(chapterWords().length===0 && state.chapter==="hard"){ state.chapter="all"; renderChapters(); }
+  if(chapterWords().length===0 && chap(state.chapter).hard){ state.chapter=curSet().all; renderChapters(); }
   if(state.mode==="cards") startCards();
   else if(state.mode==="test") newTest();
   else renderList();
@@ -446,18 +648,19 @@ function nextCard(){
   $("#card").classList.remove("flipped");
   if(!cs.cur){ finishCards(); return; }
   const {w,dir}=cs.cur;
+  if(isE(w)){ exprCard(w,dir); $("#btnYes").disabled=$("#btnNo").disabled=true; updateCardProg(); return; }
   const note=w.note?`<div class="note">${esc(w.note)}</div>`:"";
   const same=w.same.length?`<div class="syn">Ugyanez a jelentése: ${w.same.map(dictForm).join("; ")}</div>`:"";
   if(dir==="la"){
     $("#cardFront").innerHTML=`<div class="tag"><span>latin → magyar</span><span>${huLabel(w)} · ${cardMark(w)}</span></div>
-      <div class="main"><div class="big-la">${esc(w.la)}</div><div class="hint">Mit jelent? Mi a genitivusa és a neme?</div></div><div class="tap">Koppints a megfordításhoz</div>`;
+      <div class="main"><div class="big-la">${esc(w.la)}</div><div class="hint">${isA(w)?(w.t===1?"Mit jelent? Mi a genitivusa?":"Mit jelent? Mik a végződései?"):"Mit jelent? Mi a genitivusa és a neme?"}</div></div><div class="tap">Koppints a megfordításhoz</div>`;
     $("#cardBack").innerHTML=`<div class="tag"><span>jelentés</span><span>${huLabel(w)}</span></div>
       <div class="main"><div class="dict">${dictForm(w)}</div><div class="big-hu">${esc(w.hu)}</div>${note}</div>`;
   } else {
     const dupHint=w.same.length?`<div class="hint">Több helyes latin szó is van rá.</div>`:"";
     $("#cardFront").innerHTML=`<div class="tag"><span>magyar → latin</span><span>${huLabel(w)} · ${cardMark(w)}</span></div>
       <div class="main"><div class="big-hu">${esc(w.hu)}</div>${dupHint}</div><div class="tap">Koppints a megfordításhoz</div>`;
-    $("#cardBack").innerHTML=`<div class="tag"><span>szótári alak</span><span>${huLabel(w)} · ${G_NAME[w.g]}</span></div>
+    $("#cardBack").innerHTML=`<div class="tag"><span>szótári alak</span><span>${huLabel(w)}${w.g?" · "+G_NAME[w.g]:""}</span></div>
       <div class="main"><div class="big-la">${esc(w.la)}</div><div class="dict">${dictForm(w)}</div>${note}${same}</div>`;
   }
   $("#btnYes").disabled=$("#btnNo").disabled=true;
@@ -512,13 +715,14 @@ function syncTestControls(){
   $("#testCount").value=state.testCount;
   $("#testFull").checked=state.testFull;
   $("#testTime").value=state.testTime;
-  $("#fullWrap").style.display=state.testDir==="hu"?"":"none";
+  $("#fullWrap").style.display=(state.testDir==="hu"||state.testDir==="mix")&&state.sets.some(k=>k!=="expr")?"":"none";
 }
 function newTest(list){
   syncTestControls();
   let words=list||shuffle(chapterWords());
   const n=+state.testCount; if(!list && n>0) words=words.slice(0,n);
-  ts={items:words.map(w=>({w,dir:state.testDir,full:state.testDir==="hu"&&state.testFull,res:null,override:false})),graded:false};
+  if(!list && chap(state.chapter).id==="e47") words.sort((a,b)=>a.src.localeCompare(b.src));
+  ts={items:words.map(w=>{ const dir=pickDir(w); return {w,dir,full:dir==="hu"&&!isE(w)&&state.testFull,res:null,override:false}; }),graded:false};
   $("#testResult").hidden=true;
   $("#testSubmit").hidden=false;
   resetTimer();
@@ -529,13 +733,15 @@ function renderSheet(){
   $("#sheet").innerHTML=ts.items.map((it,i)=>{
     const w=it.w;
     let q, inp;
-    if(it.dir==="la"){
+    if(isE(w)){ [q,inp]=exprRow(it,i); }
+    else if(it.dir==="la"){
       q=`<span class="la">${esc(w.la)}</span>`;
       inp=`<input class="w" id="a${i}-w" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="jelentés" aria-label="${esc(w.la)} jelentése">`;
     } else {
       q=`${esc(w.hu)}<small>${huLabel(w)}${w.same.length?" · több jó válasz is van":""}</small>`;
       inp=`<input class="w" id="a${i}-w" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="latin szó" aria-label="${esc(w.hu)} latinul">`;
-      if(it.full) inp+=`<input class="gen" id="a${i}-g" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="gen." aria-label="genitivus végződés">
+      if(it.full && isA(w)) inp+=`<input class="gen wide" id="a${i}-g" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${w.t===1?"genitivus":"végződések"}" aria-label="${w.t===1?"genitivus":"végződések"}">`;
+      else if(it.full) inp+=`<input class="gen" id="a${i}-g" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="gen." aria-label="genitivus végződés">
         <select id="a${i}-n" aria-label="nem"><option value="">nem</option><option>m</option><option>f</option><option>n</option></select>`;
     }
     return `<li class="row" id="r${i}"><span class="num">${i+1}.</span><div class="q">${q}</div><div class="inputs">${inp}</div><div class="fb" id="fb${i}" hidden></div></li>`;
@@ -564,7 +770,16 @@ function gradeHU(ans,w){
   if(hits>0) return {ok:false,why:"részben jó"};
   return {ok:false};
 }
+/* melléknév: "-a, -um", "accessoria, accessorium" vagy a teljes hármas alak is jó */
+function matchForms(u,w){
+  const parts=x=>x.toLowerCase().split(/[,;\/\s]+/).map(y=>y.replace(/[()\-–.]/g,"")).filter(Boolean);
+  let a=parts(u); const e=parts(w.gen);
+  if(!a.length) return false;
+  if(a.length===e.length+1 && a[0]===w.la) a=a.slice(1);
+  return a.length===e.length && a.every((x,k)=>x.endsWith(e[k]));
+}
 function matchGen(u,w){
+  if(isA(w)) return matchForms(u,w);
   u=u.toLowerCase().replace(/[\s\-–]/g,""); const exp=w.gen.replace(/-/g,"");
   if(!u) return false;
   if(u===exp) return true;
@@ -575,7 +790,7 @@ function matchGen(u,w){
 function gradeLA(it,i){
   const w=it.w; const inp=$(`#a${i}-w`); const u=inp.value.trim().toLowerCase();
   const out={ok:false,parts:{}};
-  if(!u){ out.why="üresen hagytad"; out.parts.w=false; if(it.full){out.parts.g=false;out.parts.n=false;} return out; }
+  if(!u){ out.why="üresen hagytad"; out.parts.w=false; if(it.full){out.parts.g=false;if(!isA(w))out.parts.n=false;} return out; }
   let target=null, why="";
   if(u===w.la) target=w;
   else {
@@ -583,21 +798,21 @@ function gradeLA(it,i){
     if(same) target=same;
     else {
       const wAlt=new Set(w.alts);
-      const near=WORDS.find(o=>o!==w && o.la===u && o.alts.some(x=>wAlt.has(x)));
+      const near=LEX.find(o=>o!==w && o.pos===w.pos && o.la===u && o.alts.some(x=>wAlt.has(x)));
       if(near){ target=near; why=`elfogadva, de a várt szó: ${w.la}`; }
     }
   }
   if(!target){
     out.parts.w=false;
     if(lev(u,w.la)===1) out.why="majdnem: egy betű eltér";
-    if(it.full){ out.parts.g=matchGen($(`#a${i}-g`).value,w); out.parts.n=$(`#a${i}-n`).value===w.g; }
+    if(it.full){ out.parts.g=matchGen($(`#a${i}-g`).value,w); if(!isA(w)) out.parts.n=$(`#a${i}-n`).value===w.g; }
     return out;
   }
   out.parts.w=true; out.target=target;
   if(it.full){
     out.parts.g=matchGen($(`#a${i}-g`).value,target);
-    out.parts.n=$(`#a${i}-n`).value===target.g;
-    const miss=[]; if(!out.parts.g) miss.push("genitivus"); if(!out.parts.n) miss.push("nem");
+    if(!isA(w)) out.parts.n=$(`#a${i}-n`).value===target.g;
+    const miss=[]; if(!out.parts.g) miss.push(isA(w)&&w.t>1?"végződések":"genitivus"); if(out.parts.n===false) miss.push("nem");
     if(miss.length) why=(why?why+"; ":"")+"hibás: "+miss.join(" és ");
   }
   out.ok=Object.values(out.parts).every(Boolean);
@@ -607,7 +822,7 @@ function submitTest(){
   if(ts.graded) return;
   ts.items.forEach((it,i)=>{
     const w=it.w;
-    it.res = it.dir==="la" ? gradeHU($(`#a${i}-w`).value,w) : gradeLA(it,i);
+    it.res = isE(w) ? gradeExpr(it,i) : it.dir==="la" ? gradeHU($(`#a${i}-w`).value,w) : gradeLA(it,i);
     record(w,it.res.ok);
   });
   ts.graded=true;
@@ -622,6 +837,7 @@ function paintRow(i){
   const it=ts.items[i], w=it.w, r=it.res, ok=r.ok||it.override;
   const row=$("#r"+i); row.classList.toggle("ok",ok); row.classList.toggle("bad",!ok);
   row.querySelectorAll("input,select").forEach(x=>x.disabled=true);
+  if(isE(w)){ paintExprRow(it,i,ok); return; }
   const wi=$(`#a${i}-w`);
   const filled=x=>!!x.value.trim();
   if(it.dir==="la"){ wi.classList.toggle("wrong",!ok&&filled(wi)); wi.classList.toggle("right",ok); }
@@ -629,7 +845,7 @@ function paintRow(i){
     wi.classList.toggle("wrong",!r.parts.w&&!it.override&&filled(wi)); wi.classList.toggle("right",!!r.parts.w);
     if(it.full){
       $(`#a${i}-g`).classList.toggle("wrong",!r.parts.g&&!it.override&&filled($(`#a${i}-g`))); $(`#a${i}-g`).classList.toggle("right",!!r.parts.g);
-      $(`#a${i}-n`).classList.toggle("wrong",!r.parts.n&&!it.override); $(`#a${i}-n`).classList.toggle("right",!!r.parts.n);
+      const ns=$(`#a${i}-n`); if(ns){ ns.classList.toggle("wrong",!r.parts.n&&!it.override); ns.classList.toggle("right",!!r.parts.n); }
     }
   }
   const fb=$("#fb"+i); fb.hidden=false;
@@ -702,21 +918,23 @@ function paintTimer(left){
 /* ---------- szójegyzék ---------- */
 function renderList(){
   const q=stripAcc(($("#search").value||"").trim().toLowerCase());
-  const words=chapterWords().filter(w=>!q||stripAcc(w.la).includes(q)||stripAcc(w.hu.toLowerCase()).includes(q));
+  const words=chapterWords().filter(w=>!q||stripAcc(w.la).includes(q)||stripAcc((w.huAll||w.hu).toLowerCase()).includes(q));
+  const cc=chap(state.chapter), secs=cc.id===curSet().all||cc.hard;
+  if(secs) words.sort((a,b)=>SEC_ORDER.indexOf(a.sec)-SEC_ORDER.indexOf(b.sec));
   let html="", lastSec=null;
   for(const w of words){
-    const sec = state.chapter==="all"||state.chapter==="hard" ? w.d : null;
+    const sec = secs ? w.sec : null;
     if(sec!==null && sec!==lastSec){
-      const c=CHAPTERS.find(c=>c.id==="d"+sec);
-      html+=`<tr class="sec"><td colspan="3">${SUBJECT} · ${c.title}<small>${c.pattern()}</small></td></tr>`;
+      const c=CHAPTERS.find(c=>c.id===sec);
+      html+=`<tr class="sec"><td colspan="3">${SUBJECT} · ${c?c.title:SEC_TITLE[sec]}<small>${c?c.pattern():""}</small></td></tr>`;
       lastSec=sec;
     }
     const s=stats[w.key];
     const sc=s?`<span class="o">✓${s.ok}</span> <span class="x">✗${s.bad}</span>`:`<span style="opacity:.5">–</span>`;
-    html+=`<tr><td class="lat">${dictForm(w)}</td><td>${esc(w.hu)}${w.note?`<div class="hint">${esc(w.note)}</div>`:""}</td><td class="sc">${sc}</td></tr>`;
+    html+=`<tr><td class="lat">${dictForm(w)}</td><td>${esc(isE(w)?w.huAll:w.hu)}${w.note?`<div class="hint">${esc(w.note)}</div>`:""}</td><td class="sc">${sc}</td></tr>`;
   }
   $("#listBody").innerHTML=html||`<tr><td colspan="3" class="hint">Nincs találat.</td></tr>`;
-  $("#listCount").textContent=`${words.length} szó`;
+  $("#listCount").textContent=`${words.length} ${curSet().one}`;
 }
 $("#search").addEventListener("input",renderList);
 
@@ -725,15 +943,17 @@ let resetArmed=false;
 $("#resetStats").addEventListener("click",e=>{
   if(!resetArmed){ resetArmed=true; e.target.textContent="Biztosan? Kattints újra"; setTimeout(()=>{resetArmed=false;e.target.textContent="Eredmények törlése";},4000); return; }
   stats={}; saveStats(); cstats={}; saveCards(); resetArmed=false; e.target.textContent="Törölve";
-  if(state.chapter==="hard") state.chapter="all";
+  if(chap(state.chapter).hard) state.chapter=curSet().all;
   renderChapters(); if(state.mode==="list") renderList(); else if(state.mode==="cards") startCards();
 });
 
 /* ---------- init ---------- */
-$("#totalCount").textContent=WORDS.length;
+state.chapter=chap(state.chapter).id;
+renderSets();
 segInit("#cardDir","cardDir",()=>startCards());
 segInit("#cardFilter","cardFilter",()=>startCards());
 segInit("#testDir","testDir",()=>newTest());
+syncDirs();
 renderChapters();
 setMode(state.mode);
 </script>
