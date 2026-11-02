@@ -3,7 +3,7 @@
        (ha nincs megadva, a program a főnevek/melléknevek alapján maga jelöli ki)
    hu: elfogadott magyar megfelelők, az első a fő alak
    k:  a = mellékneves, g = birtokos, ag = mindkettő
-   src: a 47. oldal (7. lecke) feladatának száma: 1 kiegészítés, 2 latinra, 3 magyarra; "" = gyakorló kifejezés */
+   src: a jegyzet 47. oldalán lévő feladat száma: 1 kiegészítés, 2 latinra, 3 magyarra; "" = saját gyakorló kifejezés (nem a jegyzetből) */
 const EXPRESSIONS = [
   {"la": "musculus gracil[is]", "hu": ["karcsú izom"], "k": "a", "src": "1"},
   {"la": "os cuneiform[e]", "hu": ["ék alakú csont"], "k": "a", "src": "1"},

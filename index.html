@@ -311,7 +311,7 @@ const ADJ_NAME = {3:"3 végű",2:"2 végű",1:"1 végű"};
 const SETS = {
   noun:{label:"Főnevek", title:"Főnevek declinatiók szerint", sub:"1–2. szószedet", def:"d1", all:"all", unit:"szó szótári alakkal", one:"szó"},
   adj:{label:"Melléknevek", title:"Melléknevek szótári alak szerint", sub:"Melléknevek (46. oldal)", def:"a3", all:"aall", unit:"szó szótári alakkal", one:"szó"},
-  expr:{label:"Kifejezések", title:"Birtokos és mellékneves kifejezések", sub:"7. lecke (47. oldal) + gyakorló kifejezések", def:"e47", all:"eall", unit:"kifejezés", one:"kifejezés"},
+  expr:{label:"Kifejezések", title:"Birtokos és mellékneves kifejezések", sub:"47. oldal feladatai + saját gyakorló kifejezések", def:"e47", all:"eall", unit:"kifejezés", one:"kifejezés"},
 };
 const SET_ORDER=["noun","adj","expr"];
 WORDS.forEach(w=>{ w.pos="noun"; w.key=w.la+"|"+w.gen; w.sec="d"+w.d; });
@@ -387,9 +387,11 @@ const CHAPTERS = [
   {id:"ahard", set:"adj", hard:true, label:"Hibázott", title:"Hibázott melléknevek", pattern:()=>"azok a melléknevek, amelyeket legutóbb nem tudtál", filter:w=>isA(w)&&(stats[w.key]||{}).last===0},
 
   {id:"eall", set:"expr", label:"Összes", title:"Összes kifejezés", pattern:()=>"mellékneves és birtokos szerkezetek együtt", filter:isE},
-  {id:"e47", set:"expr", label:"7. lecke", title:"7. lecke · 47. oldal", pattern:()=>"a 2. zh mintafeladatai: 1. kiegészítés · 2. latinra · 3. magyarra", filter:w=>isE(w)&&!!w.src},
-  {id:"ea", set:"expr", label:"Mellékneves", title:"Mellékneves kifejezések", pattern:()=>'főnév + egyeztetett melléknév, pl. <span class="mono">ligamentum latum</span>', filter:w=>isE(w)&&w.k.includes("a")},
-  {id:"eg", set:"expr", label:"Birtokos", title:"Birtokos kifejezések", pattern:()=>'főnév + birtokos esetű főnév, pl. <span class="mono">corpus vertebrae</span>', filter:w=>isE(w)&&w.k.includes("g")},
+  {id:"e47", set:"expr", label:"47. oldal", title:"47. oldal · zh-mintafeladatok", pattern:()=>"csak a jegyzet 38 feladata: 1. kiegészítés · 2. latinra · 3. magyarra", filter:w=>isE(w)&&!!w.src},
+  {id:"eown", set:"expr", label:"Gyakorló", title:"Gyakorló kifejezések", pattern:()=>"nem a jegyzetből valók: a szószedetek szavaiból összeállított extra kifejezések", filter:w=>isE(w)&&!w.src},
+  {id:"ea", set:"expr", label:"Mellékneves", title:"Mellékneves kifejezések", pattern:()=>'főnév + egyeztetett melléknév, pl. <span class="mono">ligamentum latum</span>', filter:w=>isE(w)&&w.k==="a"},
+  {id:"eg", set:"expr", label:"Birtokos", title:"Birtokos kifejezések", pattern:()=>'főnév + birtokos esetű főnév, pl. <span class="mono">corpus vertebrae</span>', filter:w=>isE(w)&&w.k==="g"},
+  {id:"eag", set:"expr", label:"Birtokos + mellékneves", title:"Birtokos + mellékneves kifejezések", pattern:()=>'mindkét szerkezet egyben, pl. <span class="mono">musculus biceps brachii</span>', filter:w=>isE(w)&&w.k==="ag"},
   {id:"ehard", set:"expr", hard:true, label:"Hibázott", title:"Hibázott kifejezések", pattern:()=>"azok a kifejezések, amelyeket legutóbb nem tudtál", filter:w=>isE(w)&&(stats[w.key]||{}).last===0},
 ];
 /* több szószedet együtt */
@@ -476,7 +478,7 @@ function lev(a,b){
     for(let j=1;j<=b.length;j++){ const t=d[j]; d[j]=Math.min(d[j]+1,d[j-1]+1,prev+(a[i-1]===b[j-1]?0:1)); prev=t; } }
   return d[b.length];
 }
-function huLabel(w){ return isE(w)?KIND_NAME[w.k]+(w.src?" · 7. lecke":""):isA(w)?`${ADJ_NAME[w.t]} melléknév`:`${DECL_NAME[w.d]} declinatio`; }
+function huLabel(w){ return isE(w)?KIND_NAME[w.k]+(w.src?" · 47. oldal":" · gyakorló"):isA(w)?`${ADJ_NAME[w.t]} melléknév`:`${DECL_NAME[w.d]} declinatio`; }
 
 /* ---------- kifejezések: kártya, dolgozat ---------- */
 function exprCard(w,dir){
