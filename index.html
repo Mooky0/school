@@ -176,6 +176,13 @@ tr.sec td{background:var(--surface-2);font-family:var(--serif);font-weight:700;f
 tr.sec td small{font-family:var(--sans);font-weight:400;color:var(--muted);font-size:14px;margin-left:8px}
 td.lat{white-space:nowrap}
 td.lat .la{font-size:19px}
+.picker{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pk-head{color:var(--muted)} .pk-head b{color:var(--ink)} #pickCount{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.picker .inline input{width:4.5em;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+th.pk,td.pk{width:2.4em;padding-right:0} td.pk input,th.pk input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+th.rn,td.rn{width:2.5em;font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;padding-left:6px;padding-right:0}
+tr.picked td{background:var(--accent-soft)}
+.chip.custom{border-style:dashed;border-color:var(--accent)}
 td.sc{font-family:var(--mono);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
 td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
 .foot{color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px}
@@ -261,7 +268,7 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
           <button data-v="la">Latin → magyar</button><button data-v="hu">Magyar → latin</button><button data-v="fill" id="dirFill">Kiegészítés</button><button data-v="mix">Vegyes</button>
         </div>
         <label class="inline" for="testCount">Szavak:
-          <select id="testCount"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="0">mind</option></select>
+          <select id="testCount"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option><option value="0">mind</option></select>
         </label>
         <label class="inline" id="fullWrap" for="testFull"><input type="checkbox" id="testFull"> teljes szótári alak (<span id="fullWhat">genitivus + nem</span>)</label>
         <label class="inline" for="testTime">Időkorlát: <input type="number" id="testTime" min="0" max="180" step="1" inputmode="numeric"> perc</label>
@@ -284,9 +291,20 @@ td.sc .o{color:var(--ok)} td.sc .x{color:var(--bad)}
         <input class="search" id="search" type="search" placeholder="Keresés latinul vagy magyarul…" aria-label="Keresés">
         <span class="hint" id="listCount"></span>
       </div>
+      <div class="picker">
+        <div class="pk-head"><b>Saját dolgozat</b> · <span id="pickCount">0</span> tétel kiválasztva <button class="linkbtn" id="pickClear">mind törlése</button></div>
+        <div class="toolbar">
+          <button class="btn" id="pickAll">Lista kijelölése</button>
+          <button class="btn" id="pickNone">Lista kijelölésének törlése</button>
+          <span class="inline">Az első <input type="number" id="pickN" min="1" value="20" inputmode="numeric"> <button class="btn" id="pickFirst">kijelölése</button></span>
+          <span class="spacer"></span>
+          <button class="btn primary" id="pickGo">Dolgozat a kiválasztottakból →</button>
+        </div>
+        <p class="hint" style="margin:0">Pipáld ki a sorokat (Shift+kattintással egy egész tartomány jelölhető ki). Bármelyik szószedetből válogathatsz, a kiválasztás megmarad. A dolgozat a „Saját dolgozat” fejezetből kérdez véletlenszerűen annyit, amennyit a Szódolgozatnál beállítasz.</p>
+      </div>
       <div class="tablewrap">
         <table>
-          <thead><tr><th>Szótári alak</th><th>Jelentés</th><th>Eredmény</th></tr></thead>
+          <thead><tr><th class="pk"><input type="checkbox" id="pickHead" aria-label="A lista összes sorának kijelölése"></th><th class="rn">#</th><th>Szótári alak</th><th>Jelentés</th><th>Eredmény</th></tr></thead>
           <tbody id="listBody"></tbody>
         </table>
       </div>
@@ -409,7 +427,13 @@ function curSet(){
   if(state.sets.length===1) return SETS[state.sets[0]];
   return {title:SET_ORDER.filter(k=>state.sets.includes(k)).map(k=>SETS[k].label).join(" + "), sub:"Együtt gyakorolva", def:"mall", all:"mall", unit:"tétel", one:"tétel"};
 }
-const curChapters=()=>state.sets.length===1?CHAPTERS.filter(c=>c.set===state.sets[0]):MIX_CHAPTERS;
+/* saját dolgozat: a Szójegyzékben kipipált tételek, bármelyik szószedetből */
+const LS_CUSTOM="orvlat-12-custom";
+let custom=new Set();
+try{ custom=new Set(JSON.parse(localStorage.getItem(LS_CUSTOM)||"[]")); }catch(e){ custom=new Set(); }
+function saveCustom(){ try{ localStorage.setItem(LS_CUSTOM,JSON.stringify([...custom])); }catch(e){} }
+const CUSTOM_CH={id:"custom", custom:true, label:"★ Saját dolgozat", title:"Saját dolgozat", pattern:()=>"a Szójegyzékben kipipált tételek, bármelyik szószedetből", filter:w=>custom.has(w.key)};
+const curChapters=()=>(state.sets.length===1?CHAPTERS.filter(c=>c.set===state.sets[0]):MIX_CHAPTERS).concat(CUSTOM_CH);
 
 /* ---------- storage ---------- */
 const LS_STATS="orvlat-12-stats", LS_PREF="orvlat-12-pref";
@@ -508,7 +532,7 @@ function pickDir(w){
   return d==="la"||d==="hu"?d:r(["la","hu"]);
 }
 function syncDirs(){
-  const hasE=state.sets.includes("expr");
+  const hasE=state.sets.includes("expr")||(chap(state.chapter).custom&&chapterWords().some(isE));
   $("#dirFill").hidden=!hasE;
   if(!hasE&&state.testDir==="fill"){ state.testDir="mix"; persist(); }
   $("#testDir").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===state.testDir));
@@ -562,8 +586,8 @@ function renderChapters(){
   const el=$("#chapters"); let html="";
   const chipHtml=c=>{
     const n=LEX.filter(c.filter).length;
-    const dis=(c.hard&&n===0)?" disabled":"";
-    return `<button class="chip${c.group?" main":""}" data-ch="${c.id}" aria-pressed="${state.chapter===c.id}"${dis}>${esc(c.label)} <span class="n">${n}</span></button>`;
+    const dis=((c.hard||c.custom)&&n===0)?" disabled":"";
+    return `<button class="chip${c.group?" main":""}${c.custom?" custom":""}" data-ch="${c.id}" aria-pressed="${state.chapter===c.id}"${dis}>${esc(c.label)} <span class="n">${n}</span></button>`;
   };
   curChapters().forEach(c=>{
     if(c.sub) return;
@@ -590,12 +614,12 @@ $("#sets").addEventListener("click",e=>{
   state.setCh[setKey()]=state.chapter;
   if(state.sets.includes(k)){ if(state.sets.length===1) return; state.sets=state.sets.filter(x=>x!==k); }
   else state.sets=[...state.sets,k];
-  state.chapter=chap(state.setCh[setKey()]).id;
+  if(state.chapter!=="custom") state.chapter=chap(state.setCh[setKey()]).id;
   persist(); renderSets(); renderChapters(); syncDirs(); startMode();
 });
 $("#chapters").addEventListener("click",e=>{
   const b=e.target.closest("[data-ch]"); if(!b||b.disabled) return;
-  state.chapter=b.dataset.ch; persist(); renderChapters(); startMode();
+  state.chapter=b.dataset.ch; persist(); renderChapters(); syncDirs(); startMode();
 });
 
 /* ---------- modes ---------- */
@@ -607,7 +631,7 @@ function setMode(m){
 }
 document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 function startMode(){
-  if(chapterWords().length===0 && chap(state.chapter).hard){ state.chapter=curSet().all; renderChapters(); }
+  if(chapterWords().length===0 && (chap(state.chapter).hard||chap(state.chapter).custom)){ state.chapter=curSet().all; renderChapters(); }
   if(state.mode==="cards") startCards();
   else if(state.mode==="test") newTest();
   else renderList();
@@ -717,7 +741,7 @@ function syncTestControls(){
   $("#testCount").value=state.testCount;
   $("#testFull").checked=state.testFull;
   $("#testTime").value=state.testTime;
-  $("#fullWrap").style.display=(state.testDir==="hu"||state.testDir==="mix")&&state.sets.some(k=>k!=="expr")?"":"none";
+  $("#fullWrap").style.display=(state.testDir==="hu"||state.testDir==="mix")&&chapterWords().some(w=>!isE(w))?"":"none";
 }
 function newTest(list){
   syncTestControls();
@@ -921,24 +945,66 @@ function paintTimer(left){
 function renderList(){
   const q=stripAcc(($("#search").value||"").trim().toLowerCase());
   const words=chapterWords().filter(w=>!q||stripAcc(w.la).includes(q)||stripAcc((w.huAll||w.hu).toLowerCase()).includes(q));
-  const cc=chap(state.chapter), secs=cc.id===curSet().all||cc.hard;
+  const cc=chap(state.chapter), secs=cc.id===curSet().all||cc.hard||cc.custom;
   if(secs) words.sort((a,b)=>SEC_ORDER.indexOf(a.sec)-SEC_ORDER.indexOf(b.sec));
+  listWords=words;
   let html="", lastSec=null;
-  for(const w of words){
+  words.forEach((w,idx)=>{
     const sec = secs ? w.sec : null;
     if(sec!==null && sec!==lastSec){
       const c=CHAPTERS.find(c=>c.id===sec);
-      html+=`<tr class="sec"><td colspan="3">${SUBJECT} · ${c?c.title:SEC_TITLE[sec]}<small>${c?c.pattern():""}</small></td></tr>`;
+      html+=`<tr class="sec"><td colspan="5">${SUBJECT} · ${c?c.title:SEC_TITLE[sec]}<small>${c?c.pattern():""}</small></td></tr>`;
       lastSec=sec;
     }
     const s=stats[w.key];
     const sc=s?`<span class="o">✓${s.ok}</span> <span class="x">✗${s.bad}</span>`:`<span style="opacity:.5">–</span>`;
-    html+=`<tr><td class="lat">${dictForm(w)}</td><td>${esc(isE(w)?w.huAll:w.hu)}${w.note?`<div class="hint">${esc(w.note)}</div>`:""}</td><td class="sc">${sc}</td></tr>`;
-  }
-  $("#listBody").innerHTML=html||`<tr><td colspan="3" class="hint">Nincs találat.</td></tr>`;
+    const on=custom.has(w.key);
+    html+=`<tr${on?' class="picked"':""}><td class="pk"><input type="checkbox" data-i="${idx}"${on?" checked":""} aria-label="${esc(w.la)} kiválasztása"></td><td class="rn">${idx+1}.</td><td class="lat">${dictForm(w)}</td><td>${esc(isE(w)?w.huAll:w.hu)}${w.note?`<div class="hint">${esc(w.note)}</div>`:""}</td><td class="sc">${sc}</td></tr>`;
+  });
+  $("#listBody").innerHTML=html||`<tr><td colspan="5" class="hint">${cc.custom?"Még nincs kiválasztott tétel. Válassz egy fejezetet, és pipáld ki, amit a dolgozatba szeretnél.":"Nincs találat."}</td></tr>`;
   $("#listCount").textContent=`${words.length} ${curSet().one}`;
+  syncPicker();
 }
-$("#search").addEventListener("input",renderList);
+let listWords=[], lastPick=-1;
+function syncPicker(){
+  $("#pickCount").textContent=custom.size;
+  const n=listWords.filter(w=>custom.has(w.key)).length, h=$("#pickHead");
+  h.checked=listWords.length>0&&n===listWords.length; h.indeterminate=n>0&&n<listWords.length;
+  $("#pickGo").disabled=custom.size===0;
+}
+function setPicked(ws,on){
+  ws.forEach(w=>on?custom.add(w.key):custom.delete(w.key));
+  saveCustom(); renderChapters();
+  if(chap(state.chapter).custom&&!custom.size){ state.chapter=curSet().all; persist(); renderChapters(); }
+  renderList();
+}
+$("#listBody").addEventListener("click",e=>{
+  const cb=e.target.closest("input[data-i]"); if(!cb) return;
+  const i=+cb.dataset.i;
+  if(e.shiftKey&&lastPick>=0&&lastPick<listWords.length){
+    const [a,b]=[Math.min(lastPick,i),Math.max(lastPick,i)];
+    setPicked(listWords.slice(a,b+1),cb.checked);
+  } else setPicked([listWords[i]],cb.checked);
+  lastPick=i;
+});
+$("#pickHead").addEventListener("change",e=>setPicked(listWords,e.target.checked));
+$("#pickAll").addEventListener("click",()=>setPicked(listWords,true));
+$("#pickNone").addEventListener("click",()=>setPicked(listWords,false));
+$("#pickFirst").addEventListener("click",()=>{
+  const n=Math.max(1,Math.round(+$("#pickN").value)||0); $("#pickN").value=n;
+  setPicked(listWords.slice(0,n),true);
+});
+let clearArmed=false;
+$("#pickClear").addEventListener("click",e=>{
+  if(!clearArmed){ clearArmed=true; e.target.textContent="biztosan? kattints újra"; setTimeout(()=>{clearArmed=false;e.target.textContent="mind törlése";},4000); return; }
+  clearArmed=false; e.target.textContent="mind törlése"; setPicked([...LEX].filter(w=>custom.has(w.key)),false);
+});
+$("#pickGo").addEventListener("click",()=>{
+  if(!custom.size) return;
+  state.chapter="custom"; persist(); renderChapters(); syncDirs(); setMode("test");
+  window.scrollTo({top:0});
+});
+$("#search").addEventListener("input",()=>{ lastPick=-1; renderList(); });
 
 /* ---------- reset ---------- */
 let resetArmed=false;
