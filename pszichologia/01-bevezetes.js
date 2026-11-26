@@ -258,9 +258,3 @@ questions: [
 {c:"1.9",q:"Melyik irányzat középpontjában áll a megfigyelhető viselkedés és a kondicionálás?",a:["Behaviorista","Humanisztikus","Pszichoanalitikus","Egzisztenciális"]},
 {c:"1.9",q:"Melyik NEM a pszichológia alkalmazási területe a diasor szerint?",a:["Asztrológiai tanácsadás","Igazságügyi pszichológia","Sportpszichológia","Pszichometria"]},
 {c:"1.9",q:"Melyik terület foglalkozik a pszichológiai mérésekkel (tesztek, skálák)?",a:["Pszichometria","Neuropszichológia","Pozitív pszichológia","Kulturális pszichológia"]},
-{c:"1.9",q:"Milyen formájú a ZH a kurzuson?",a:["Moodle, feleletválasztós, max. 30 perc, nincs mínuszpont","Szóbeli felelet","Esszé, 90 perc","Feleletválasztós, mínuszponttal"]},
-{c:"1.9",q:"Hány százaléktól elégséges a számonkérés?",a:["51%","50%","60%","41%"]},
-{c:"1.9",q:"Milyen eredménytől jár jeles (5) a kurzus ponthatárai szerint?",a:["90% felett","85% felett","76%-tól","80%-tól"]},
-{c:"1.9",q:"Mikor érvényesíthető a pozitív katalógus +10%-a?",a:["Csak az elégséges szint (51%) elérése után","Bármikor, bukás esetén is","Csak vizsgán","Csak levelező tagozaton"]}
-]
-});
