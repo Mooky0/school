@@ -1,0 +1,11 @@
+{
+  "name": "orvlat-dev",
+  "private": true,
+  "description": "Fejlesztői eszközök: jsdom füstteszt az index.html-hez",
+  "scripts": {
+    "test": "node smoke-test.js"
+  },
+  "devDependencies": {
+    "jsdom": "24.1.3"
+  }
+}
